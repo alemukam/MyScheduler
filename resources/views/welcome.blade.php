@@ -63,8 +63,20 @@
                 margin-bottom: 30px;
             }
         </style>
+        <script>
+                function prevMonth() {
+                    console.log('Prev Month');
+                }
+                function nextMonth() {
+                    console.log('Next Month');
+                }
+            </script>
     </head>
     <body>
+        @php
+            $current_month = getdate()['mon'];
+            $current_year = getdate()['year'];
+        @endphp
         <div class="flex-center position-ref full-height">
             @if (Route::has('login'))
                 <div class="top-right links">
@@ -89,6 +101,13 @@
                     <a href="https://forge.laravel.com">Forge</a>
                     <a href="https://github.com/laravel/laravel">GitHub</a>
                 </div>
+            </div>
+        </div>
+        <div>
+            @inject('calendar', 'App\Classes\Calendar')
+            <div>
+                {{ $calendar -> build($current_month, $current_year) }}
+                {{ $calendar -> show() }}
             </div>
         </div>
     </body>
