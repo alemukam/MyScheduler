@@ -11,7 +11,7 @@ class Calendar
     private $date_info; // information about the first day of the month (['wday'] is needed from the array)
     private $day_of_week; // 0 - 6 -> number of a specific day in a week
     private $prevMonth; // last date of the previous month
-    private $btnEvents = ['next' => 'nextMonth()', 'prev' => 'prevMonth()'];
+    private $btnEvents = ['prev' => 'prevMonth()', 'next' => 'nextMonth()'];
 
     public function __construct() { }
 
@@ -51,23 +51,25 @@ class Calendar
 
     // Destructor
     public function __destruct() {
-        unset($month, $year, $days_of_week, $num_days, $date_info, $day_of_week);
+        unset($month, $year, $days_of_week, $num_days, $date_info, $day_of_week, $prevMonth);
         unset($btnEvents);
     }
 
     // Display the calendar
     public function show() {
-        $output = '<table class="calendar">'; // calendar will be displayed as an HTML <table>, this is the opening tag
-        $output .= '<tr><td colspan="1"><button id="month_back" onclick="'. $this -> btnEvents['prev'] .'">&#8810;</button></td>';
-        $output .= '<td colspan="5" class="month_display">'. $this -> date_info['month'] .' '. $this -> year .'</td>';
-        $output .= '<td colspan="1"><button id="month_back" onclick="'. $this -> btnEvents['next'] .'">&#8811;</button></td></tr>';
+        $output = '<table class="table table-bordered calendar"><thead>';
+        //$output .= '<thead><tr><td colspan="1">aa</td><td colspan="5">aa</td><td colspan="1">aa</td></tr>';
+        // calendar will be displayed as an HTML <table>, this is the opening tag
+        $output .= '<tr><td colspan="1" id="btn_month_back" class="btn-info" onclick="'. $this -> btnEvents['prev'] .'">&#8810;</td>';
+        $output .= '<td colspan="5" class="month_display">年'. $this -> year .' 月'. intval($this -> month) .'</td>';
+        $output .= '<td colspan="1" id="btn_month_next" class="btn-info" onclick="'. $this -> btnEvents['next'] .'">&#8811;</td></tr>';
         //$output .= '<caption>'. $this -> date_info['month'] .' '. $this -> year .'</caption>'; // prints month and year as the first line of the calendar (full width of the table)
         $output .= '<tr>'; // opening of the row wichi will display weekdays
 
         // append all weekdays as separate columns to the second row
         foreach ($this -> days_of_week as $weekday)
             $output .= '<th class="header">'. $weekday .'</th>';
-        $output .= '</tr><tr>'; // close the "weekdays" row and begin the next one
+        $output .= '</tr></thead><tr>'; // close the "weekdays" row and begin the next one
 
         // create a colspan for as many days as the "distance" of the first day of the month from the first day of the week
         // if the first day of the month is not the first day of the week it will not be printed at the beginning of the week
@@ -76,7 +78,7 @@ class Calendar
             $prevDates = '';
             // dates are created from lates to newest, so newest dates must be before the latest
             for($i = $this -> day_of_week; $i > 0; $i--, $this -> prevMonth--)
-                $prevDates = '<td class="day-outside" onclick="'. $this -> btnEvents['prev'] .'">' . $this -> prevMonth . '</td>' . $prevDates;
+                $prevDates = '<td class="day day-outside" onclick="'. $this -> btnEvents['prev'] .')">'. $this -> prevMonth . '</td>' . $prevDates;
 
             $output .= $prevDates;
             unset($prevDates);
@@ -93,7 +95,8 @@ class Calendar
                 // if the last day of the month is the last day of the week ($this -> day_of_week === 6) the if statement will not be executed because the while loop will finish before the if statement
             }
 
-            $output .= '<td class="day'. (($this -> day_of_week === 6) ? ' holiday' : '') .'">'. $current_day . '</td>'; // print the current day
+            $output .= '<td class="day day-current'. (($this -> day_of_week === 6) ? ' holiday' : '') .'" onclick="getEvents('.
+            $current_day .', '. $this -> month .', '. $this -> year .')">'. $current_day . '</td>'; // print the current day
 
             // go to the next date and next day of the week
             $current_day++;
@@ -107,8 +110,9 @@ class Calendar
             if ($this -> year > 2036 && $this -> month == 12) $output .= '<td colspan=">'. $remaining_days .'></td>'; // colspan - no dates are ahead
             else
             {
-                for($i = 1; $remaining_days > 0; $remaining_days--, $i++)
-                    $output .= '<td class="day-outside'. (($this -> day_of_week === 6) ? ' holiday' : '') .'" onclick="'. $this -> btnEvents['next'] .'">'. $i .'</td>';
+                for($i = 1; $remaining_days > 0; $remaining_days--, $i++, $this -> day_of_week++)
+                    $output .= '<td class="day day-outside'. (($this -> day_of_week === 6) ? ' holiday' : '').
+                    '" onclick="'. $this -> btnEvents['next'] .'">'. $i .'</td>';
             }
             
         }

@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('css-files')
+@endsection
+
+@section('js-files')
+@endsection
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">

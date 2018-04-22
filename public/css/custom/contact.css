@@ -1,0 +1,10 @@
+.row {
+    margin-bottom: 25px;
+}
+
+img {
+    width: 165px;
+    display: block;
+    margin-left: auto;
+	margin-right: auto;
+}

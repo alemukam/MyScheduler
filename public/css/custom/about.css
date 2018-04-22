@@ -1,0 +1,26 @@
+h4 {
+    font-weight: bold;
+}
+
+img {
+    width: 200px;
+    display: block;
+    margin-left: auto;
+	margin-right: auto;
+}
+
+.img_sub {
+    text-align: center;
+}
+
+@media screen and (min-width: 768px), screen and (device-min-width: 768px) {
+    .img_hide {
+        display: block;
+    }
+}
+
+@media screen and (max-width: 767px), screen and (device-max-width: 767px) {
+    .img_hide {
+        display: none;
+    }
+}
