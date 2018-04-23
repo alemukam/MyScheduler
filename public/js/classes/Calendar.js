@@ -11,13 +11,7 @@ function Calendar(month, year) {
 		// 0. Get a week day of the first day of the month
 		// if day (3rd argument) is not "0" than months start from 0
 		this.dayOfWeek = new Date(this.year, this.month - 1, 1).getDay(); // Sunday is 0, Monday is 1, and so on
-		switch (this.dayOfWeek) {
-			case 0:
-				this.dayOfWeek = 6;
-				break;
-			default:
-				--this.dayOfWeek;
-		}
+		this.dayOfWeek = (this.dayOfWeek == 0 ? 6 : this.dayOfWeek - 1);
 
 		// 1. create the table HTML element - container for the calendar
 		var calendar = document.createElement('table');
@@ -125,7 +119,7 @@ function Calendar(month, year) {
 				elem.classList.add('day');
 				elem.classList.add('day-outside');
 				if (this.dayOfWeek == 1) elem.classList.add('holiday');
-				elem.setAttribute('onlcick', 'nextMonth('+ this.month +', '+ this.year +')');
+				elem.setAttribute('onclick', 'nextMonth('+ this.month +', '+ this.year +')');
 				var elemText = document.createTextNode(i);
 				elem.appendChild(elemText);
 				weekRow.appendChild(elem);

@@ -32,4 +32,8 @@ function renderCalendar(month, year) {
         btnPrev.classList.remove('btn-info');
         btnPrev.classList.add('btn-inactive');
     }
+
+    var currentDateElement = document.querySelectorAll('.day-current')[currentDay - 1];
+    if (month == currentMonth && year == currentYear) currentDateElement.classList.add('day-today');
+    else currentDateElement.classList.remove('day-today');
 }

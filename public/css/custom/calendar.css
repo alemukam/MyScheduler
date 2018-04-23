@@ -57,9 +57,12 @@
     opacity: 0.3;
 }
 
-/* 3. Miscellaneous classes */
+/* 3. Miscellaneous classes and ids */
+#today:hover {
+    cursor: pointer;
+}
 .day-today {
-    background-color: yellow;
+    text-shadow: 0 0 14px black;
 }
 
 .btn-inactive {

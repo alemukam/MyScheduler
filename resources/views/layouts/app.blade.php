@@ -29,7 +29,7 @@
         @include('includes.navbar')
 
         <main class="container">
-            @include('includes.messages')
+                @include('includes.messages')
             @yield('content')
         </main>
     </div>

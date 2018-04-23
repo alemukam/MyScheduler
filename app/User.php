@@ -26,4 +26,23 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+
+    // Group - User: Relationship one-to-many (user creates a group)
+    public function groups()
+    {
+        return $this -> hasMany('App\Group', 'moderator_id');
+    }
+
+    // Group - User: Relationship many-to-many (user is part of many groups)
+    public function groupRelations()
+    {
+        return $this -> belongsToMany('App\UserGroupRelation');
+    }
+
+    // UserEvent - User: Relationship one-to-many (user creates an event)
+    public function userEvents()
+    {
+        return $this -> hasMany('App\UserEvent');
+    }
 }
