@@ -12,6 +12,7 @@
     </script>
     <script src="{{ asset('js/classes/Calendar.js') }}"></script>
     <script src="{{ asset('js/custom/calendar.js') }}"></script>
+    <script src="{{ asset('js/custom/calendar_user.js') }}"></script>
     <script>
         $(document).ready(function() {
             renderCalendar(currentMonth, currentYear);
@@ -26,7 +27,7 @@
     <div class="row">
         <h2>Upcoming events</h2>
     </div>
-    <div id="upcoming_events">
+    <div id="user_events">
         <table class="table table-bordered">
             <thead>
                 <tr>

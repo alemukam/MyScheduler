@@ -17,6 +17,7 @@ class CreateUserGroupRelationsTable extends Migration
             $table -> increments('id');
             $table -> unsignedInteger('user_id');
             $table -> unsignedInteger('group_id');
+            $table -> char('status', 1); // a - approved, p - pending, b - blocked
             $table->timestamps();
 
             // define foreign keys

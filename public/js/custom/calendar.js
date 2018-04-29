@@ -15,9 +15,6 @@ function nextMonth(month, year) {
 
     renderCalendar(month, year);
 }
-function getEvents(day, month, year) {
-    console.log(day + '.' + month + '.' + year);
-}
 
 function renderCalendar(month, year) {
     myCalendar = null;

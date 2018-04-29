@@ -1,6 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\User;
+use App\GroupEvent;
+use App\AdminNotification;
+use App\UserGroupRelation;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
@@ -25,13 +29,24 @@ class NavigationController extends Controller
     public function homepage()
     {
         if (!Auth::check()) return view('pages.start_guest');
-        else{
+        else
+        {
+            // current month should be displayed by default
             $current_day = getdate();
             $current_year = $current_day['year'];
             $current_month = $current_day['mon'];
             $current_day = $current_day['mday'];
 
-            return view('pages.start_auth') -> with('date', ['day' => $current_day, 'month' => $current_month, 'year' => $current_year]);
+            // get events of the user
+            $id = auth() -> user() -> id;
+            $user_events = User::find($id) -> userEvents() -> take(5) -> get();
+            $groups = User::find($id) -> groupRelations;
+            //return $groups;
+            //$groups = UserGroupRelation::where('user_id', $id) -> pluck('group_id') -> toArray();
+            //$group_events = GroupEvent::where('')
+
+            return view('pages.start_auth') -> with('date', ['day' => $current_day, 'month' => $current_month, 'year' => $current_year])
+            -> with('type', 'user');
         }
     }
 
@@ -61,10 +76,26 @@ class NavigationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function post_contact()
+    public function post_contact(Request $request)
     {
-        //fgegtregtergtretgergtews
-        return view('pages.contact');
+        // validate the input - all fields are mandatory
+        $this -> validate($request, [
+            'name' => 'required | max: 64',
+            'email' => 'required | email | max: 64',
+            'title' => 'required | max: 32',
+            'message' => 'required'
+        ]);
+
+        $notif = new AdminNotification;
+        $notif -> name = $request -> input('name');
+        $notif -> email = $request -> input('email');
+        $notif -> title = $request -> input('title');
+        $notif -> message = $request -> input('message');
+        $notif -> status = 'p';
+        $notif -> type = 0;
+        $notif -> save();
+
+        return redirect() -> action('NavigationController@contact') -> with('success', 'Thank you. Message has been sent. We will reply shortly');
     }
 
     /**

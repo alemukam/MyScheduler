@@ -11,10 +11,21 @@
 |
 */
 
+// Basic navigation - miscellaneous pages
 Route::get('/', 'NavigationController@homepage');
 Route::get('/about', 'NavigationController@about');
 Route::get('/contact', 'NavigationController@contact');
 Route::post('/contact', 'NavigationController@post_contact');
 
+// Authentication related routes
 Auth::routes();
 Route::get('/dashboard', 'NavigationController@dashboard')->name('home');
+
+// Group related routes
+Route::resource('groups', 'GroupController');
+Route::get('/dashboard/groups', 'GroupController@dashboard');
+Route::post('groups/{id}/newjoiner', 'GroupController@newJoiner');
+// Group - approve or reject memebership requests
+Route::put('/approve/{id}/{group_id}', 'GroupController@approveOfRequest');
+Route::delete('/reject/{id}/{group_id}', 'GroupController@rejectRequest');
+Route::put('/block/{id}/{group_id}', 'GroupController@blockUser');

@@ -6,19 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserGroupRelation extends Model
 {
-    // set custom primary key
-    protected $primaryKey = ['user_id', 'group_id'];
-    public $incrementing = false;
-
-    // Group - User: Relationship many-to-many (user is part of many groups)
-    public function userRelations()
+    // Each UserGroup relation has only one user
+    public function user()
     {
-        return $this -> hasMany('App\UserGroupRelation');
+        return $this -> hasOne('App\User', 'id', 'user_id');
     }
 
-    // Group - User: Relationship many-to-many (user is part of many groups)
-    public function groupRelations()
+    // Each UserGroup relation has only one group
+    public function group()
     {
-        return $this -> hasMany('App\UserGroupRelation');
+        return $this -> hasOne('App\Group', 'id', 'group_id');
     }
 }

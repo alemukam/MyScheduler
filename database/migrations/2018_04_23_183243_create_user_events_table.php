@@ -16,9 +16,11 @@ class CreateUserEventsTable extends Migration
         Schema::create('user_events', function (Blueprint $table) {
             $table->increments('id');
             $table -> unsignedInteger('user_id');
+            $table -> string('title', 35);
+            $table -> date('date');
             $table -> time('start_time');
             $table -> time('end_time');
-            $table -> char('type', 1);
+            $table -> char('type', 1); // a - annual; m - monthly; w - weekly; d - daily; s - single
             $table -> unsignedTinyInteger('repeat');
             $table -> mediumText('description');
             $table->timestamps();

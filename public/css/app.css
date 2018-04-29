@@ -118,6 +118,10 @@ abbr[data-original-title] {
   border-bottom: 0;
 }
 
+a:hover {
+  text-decoration: none;
+}
+
 address {
   margin-bottom: 1rem;
   font-style: normal;

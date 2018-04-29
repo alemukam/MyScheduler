@@ -18,6 +18,8 @@ class CreateGroupsTable extends Migration
             $table -> string('name', 32);
             $table -> mediumText('description');
             $table -> unsignedInteger('moderator_id');
+            $table -> char('status', 1);
+            $table -> string('img', 32);
             $table -> timestamps();
 
             // create a foreign key
