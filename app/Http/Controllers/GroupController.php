@@ -117,7 +117,7 @@ class GroupController extends Controller
 
         // 1.1. it is not allowed to create two groups with the same name
         $checker = Group::where('name', $request -> input('name')) -> get();
-        if (sizeof($checker) > 1) return view('groups.create') -> with('validation_failed', 'Group with this name already exists');
+        if (sizeof($checker) > 0) return view('groups.create') -> with('validation_failed', 'Group with this name already exists');
 
         // 1.2. create a new pending group
         $group = new Group;
@@ -136,7 +136,7 @@ class GroupController extends Controller
         $notif -> email = $user -> email;
         $notif -> title = 'New Group Request';
         $notif -> message = 'Please approve of my new group.';
-        $notif -> status = 'p';
+        $notif -> status = 'n';
         $notif -> type = '1';
         $notif -> group_id = $group -> id;
         $notif -> save();
@@ -153,7 +153,7 @@ class GroupController extends Controller
         
 
         // 4. go to the dashboard with all groups of the user
-        return redirect('/dashboard/groups');
+        return redirect('/dashboard/groups') -> with('success', 'Request has been submitted.');
     }
 
     /**
@@ -168,7 +168,7 @@ class GroupController extends Controller
         $user_id = auth() -> user() -> id;
 
         // groups with status A (appvoed) are available to the public
-        if (strtolower($group -> status) != 'a' && $group -> moderator_id != $user_id) abort(403);
+        if (strtolower($group -> status) != 'a' && $group -> moderator_id != $user_id) abort(404);
 
         // get user status
         $user_status = $group -> userRelations() -> wherePivot('user_id', $user_id) -> first()['pivot']['status'];
@@ -202,7 +202,14 @@ class GroupController extends Controller
      */
     public function edit($id)
     {
+        $user_id = auth() -> user() -> id;
+        $group = Group::findOrfail($id);
+
         // access control - only the moderator can edit the group
+        if (strtolower($group -> status) == 'p' && $user_id != $group -> moderator_id) abort(404);
+        if ($user_id != $group -> moderator_id) abort(403);
+
+        return view('groups.edit') -> with('group' , $group);
 
     }
 
@@ -215,7 +222,82 @@ class GroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user_id = auth() -> user() -> id;
+        $group = Group::findOrfail($id);
+
+        // access control - only the moderator can edit the group
+        if (strtolower($group -> status) == 'p' && $user_id != $group -> moderator_id) abort(404);
+        if ($user_id != $group -> moderator_id) abort(403);
+
+
+        // the same validation as on store
+        $this -> validate($request, [
+            'name' => 'required | max: 32',
+            'description' => 'required',
+            'group_img' => 'image | nullable | max: 1999'
+        ]);
+
+
+
+        $id = auth() -> user() -> id;
+        $user = User::find($id);
+        // handle file upload (only if a new file is provided)
+        if ($request -> hasFile('group_img'))
+        {
+            // get filename with the extension
+            $fileNameWithExt = $request -> file('group_img') -> getClientOriginalName();
+            // get just file name
+            $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            // get just extension
+            $ext = $request -> file('group_img') -> getClientOriginalExtension();
+            $fileNameToStore = $id . $fileName . '_' . time() . '.' . $ext;
+        
+            // upload the image
+            $path = $request -> file('group_img') -> storeAs('public/imgs_g/', $fileNameToStore);
+        }
+
+
+        // update the group info
+        $group -> name = $request -> input('name');
+        $group -> description = $request -> input('description');
+        // update the image only if a new image is provided
+        if ($request -> hasFile('group_img')) $group -> img = $fileNameToStore;
+        // set status to "pending" only if the request had been rejected by the administrator
+        // update a request to the administrator
+        $stats = array('p', 'r');
+        if (in_array(strtolower($group -> status), $stats))
+        {
+            $group -> status = 'p';
+
+            $admin_req = $group -> adminNotification();
+            if (sizeof($admin_req) > 0)
+            {
+                // initial request is available
+                $admin_req = $admin_req -> first();
+                $admin_req -> title = 'Updated Group Request';
+                $admin_req -> message = 'I have made the corrections. Could you please review the group one more time ?';
+                $admin_req -> status = 'n';
+                $admin_req -> save();
+            }
+            else
+            {
+                // initial request has been deleted
+                $admin_req = new AdminNotification;
+                $admin_req -> name = $user -> name;
+                $admin_req -> email = $user -> email;
+                $admin_req -> title = 'Updated Group Reques';
+                $admin_req -> message = 'I have made the corrections. Could you please review the group one more time ?';
+                $admin_req -> status = 'n';
+                $admin_req -> type = '1';
+                $admin_req -> group_id = $group -> id;
+                $admin_req -> save();
+            }
+        }
+        
+        $group -> save();
+
+        
+        return redirect('/dashboard/groups') -> with('success', 'Request has been submitted.');
     }
 
     /**
@@ -226,7 +308,35 @@ class GroupController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user_id = auth() -> user() -> id;
+        $group = Group::findOrfail($id);
+
+        // access control - only the moderator can edit the group
+        if (strtolower($group -> status) == 'p' && $user_id != $group -> moderator_id) abort(404);
+        if ($user_id != $group -> moderator_id) abort(403);
+
+        // 1. Destroy all foreign keys
+        // 1.1. Admin request
+        $admin_req = $group -> adminNotification() -> get();
+        if (sizeof($admin_req) > 0) foreach($admin_req as $req) $req -> delete();
+        unset($admin_req);
+
+        // 1.2. Membership
+        $membership = $group -> userRelations() -> get();
+        if (sizeof($membership) > 0) foreach($membership as $member) $member['pivot'] -> delete();
+        unset($membership);
+
+        // 1.3. Group Events
+        $group_events = $group -> groupEvents() -> get();
+        if (sizeof($group_events) > 0) foreach($group_events as $event) $event -> delete();
+        unset($group_events);
+
+
+        // 2. Delete the group itself
+        $group -> delete();
+        unset($group, $user_id);
+
+        return redirect('/dashboard/groups') -> with('success', 'Your group has been deleteded.');
     }
 
 

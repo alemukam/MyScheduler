@@ -101,7 +101,7 @@
                     @endif
                 @endforeach
             @else
-                <h5>You have submitted no requests for group publishing</h5>
+                <h5>You have no rejected requests</h5>
             @endif
         </div>
 

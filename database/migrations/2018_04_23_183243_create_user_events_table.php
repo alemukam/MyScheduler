@@ -20,8 +20,6 @@ class CreateUserEventsTable extends Migration
             $table -> date('date');
             $table -> time('start_time');
             $table -> time('end_time');
-            $table -> char('type', 1); // a - annual; m - monthly; w - weekly; d - daily; s - single
-            $table -> unsignedTinyInteger('repeat');
             $table -> mediumText('description');
             $table->timestamps();
 
