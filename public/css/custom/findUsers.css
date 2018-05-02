@@ -1,0 +1,22 @@
+table {
+    margin-top: 35px;
+}
+
+.actions, .action-btn {
+    text-align: center;
+}
+
+.action-btn:hover {
+    cursor: pointer;
+}
+
+
+@media screen and (max-width: 428px), screen and (device-max-width: 428px) {
+    .table {
+        font-size: 10px;
+    }
+
+    .table input {
+        font-size: 8px;
+    }
+}

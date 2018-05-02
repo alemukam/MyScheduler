@@ -8,16 +8,22 @@
     @endif
 @endif
 
-{{-- Success messages and session messages --}}
+{{-- Success session messages --}}
 @if (session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
     </div>
 @endif
 
-{{-- Success messages and session messages --}}
+{{-- Error messages and session messages --}}
 @if (isset($validation_failed))
     <div class="alert alert-danger">
         {{ $validation_failed }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
     </div>
 @endif

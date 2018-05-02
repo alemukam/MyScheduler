@@ -21,6 +21,8 @@ class NavigationController extends Controller
         $this->middleware('auth', ['except' => ['homepage', 'about', 'contact', 'post_contact',]]);
     }
 
+
+
     /**
      * Show the home page 1) authenticated users - calendar; 2) guests - facts about the app.
      *
@@ -50,6 +52,8 @@ class NavigationController extends Controller
         }
     }
 
+
+
     /**
      * Show the application dashboard.
      *
@@ -61,6 +65,8 @@ class NavigationController extends Controller
         return view('pages.about') -> with('uri', $uri);
     }
 
+
+
     /**
      * Display contact information about the community
      *
@@ -71,6 +77,9 @@ class NavigationController extends Controller
         $uri = $request->path();
         return view('pages.contact') -> with('uri', $uri);
     }
+
+
+
     /**
      * Insert a new message from the site (contact form)
      *
@@ -91,20 +100,10 @@ class NavigationController extends Controller
         $notif -> email = $request -> input('email');
         $notif -> title = $request -> input('title');
         $notif -> message = $request -> input('message');
-        $notif -> status = 'p';
+        $notif -> status = 'n';
         $notif -> type = 0;
         $notif -> save();
 
         return redirect() -> action('NavigationController@contact') -> with('success', 'Thank you. Message has been sent. We will reply shortly');
-    }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function dashboard()
-    {
-        return view('pages.dashboard');
     }
 }

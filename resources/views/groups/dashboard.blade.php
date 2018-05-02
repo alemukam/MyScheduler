@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-    @if(strtolower(Auth::user() -> user_role) == 'moderator')
+    @if(strtolower(Auth::user() -> user_role) != 'basic')
         {{-- Group moderator section --}}
         @php
             if ($data['moderator'] !== null)
@@ -43,7 +43,11 @@
                         </div>
                         <div class="col-12 col-sm-8 col-md-9 col-lg-10">
                             <h4><a href="{{ url('groups/' . $appr -> id) }}">{{ $appr -> name }}</a></h4>
-                            <p>{{ $appr -> description }}</p>
+                            @if(strlen($appr -> description) <= $length)
+                                <p>{{ $appr -> description }}</p>
+                            @else
+                                <p>{{ substr($appr -> description, 0, $length) . ' . . .' }}</p>
+                            @endif
                         </div>
                     </div>
                     @if(!$loop -> last)
@@ -67,7 +71,11 @@
                         </div>
                         <div class="col-12 col-sm-8 col-md-9 col-lg-10">
                             <h4><a href="{{ url('groups/' . $pend -> id) }}">{{ $pend -> name }}</a></h4>
-                            <p>{{ $pend -> description }}</p>
+                            @if(strlen($pend -> description) <= $length)
+                                <p>{{ $pend -> description }}</p>
+                            @else
+                                <p>{{ substr($pend -> description, 0, $length) . ' . . .' }}</p>
+                            @endif
                         </div>
                     </div>
                     @if(!$loop -> last)
@@ -140,7 +148,11 @@
                         </div>
                         <div class="col-12 col-sm-8 col-md-9 col-lg-10">
                             <h4><a href="{{ url('groups/' . $appr -> group['id']) }}">{{ $appr -> group['name'] }}</a></h4>
-                            <p>{{ $appr -> group['description'] }}</p>
+                            @if(strlen($appr -> group['description']) <= $length)
+                                <p>{{ $appr -> group['description'] }}</p>
+                            @else
+                                <p>{{ substr($appr -> group['description'], 0, $length) . ' . . .' }}</p>
+                            @endif
                             <small>Group Moderator: {{ $appr -> group -> user['name'] }}</small>
                         </div>
                     </div>
@@ -165,7 +177,11 @@
                         </div>
                         <div class="col-12 col-sm-8 col-md-9 col-lg-10">
                             <h4><a href="{{ url('groups/' . $pend -> group['id']) }}">{{ $pend -> group['name'] }}</a></h4>
-                            <p>{{ $pend -> group['description'] }}</p>
+                            @if(strlen($pend -> group['description']) <= $length)
+                                <p>{{ $pend -> group['description'] }}</p>
+                            @else
+                                <p>{{ substr($pend -> group['description'], 0, $length) . ' . . .' }}</p>
+                            @endif
                             <small>Group Moderator: {{ $pend -> group -> user['name'] }}</small>
                         </div>
                     </div>

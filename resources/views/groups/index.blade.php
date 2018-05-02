@@ -19,7 +19,11 @@
                 </div>
                 <div class="col-12 col-sm-8 col-md-9 col-lg-10">
                     <h4><a href="groups/{{ $item -> id }}">{{ $item -> name }}</a></h4>
-                    <p>{{ $item -> description }}</p>
+                    @if(strlen($item -> description) <= $length)
+                        <p>{{ $item -> description }}</p>
+                    @else
+                        <p>{{ substr($item -> description, 0, $length) . ' . . .' }}</p>
+                    @endif
                     <small>Group Moderator: {{ $item -> user['name'] }}</small>
                 </div>
             </div>

@@ -25,10 +25,10 @@
     </div>
     <h3>Drop us a message</h3>
     {!! Form::open(['action' => 'NavigationController@post_contact', 'method' => 'POST']) !!}
-        <!-- Form Label for the name -->
+        {{-- Form Label for the name --}}
         <div class="form-group row">
-            {{ Form::label('name', 'Name', ['class' => 'col-sm-1 col-form-label']) }}
-            <div class="col-sm-11">
+            {{ Form::label('name', 'Name', ['class' => 'col-12 col-sm-2 col-md-2 col-lg-1 col-form-label']) }}
+            <div class="col-12 col-sm-10 col-md-10 col-lg-11">
                 @guest
                     {{ Form::text('name', '', ['type' => 'text', 'placeholder' => 'Type your name here ...', 'class' => 'form-control' . ($errors->has('name') ? ' is-invalid' : '')]) }}
                 @else
@@ -36,10 +36,10 @@
                 @endguest
             </div>
         </div>
-        <!-- Form Label for the e-mail -->
+        {{-- Form Label for the e-mail --}}
         <div class="form-group row">
-            {{ Form::label('email', 'E-mail', ['class' => 'col-sm-1 col-form-label']) }}
-            <div class="col-sm-11">
+            {{ Form::label('email', 'E-mail', ['class' => 'col-12 col-sm-2 col-md-2 col-lg-1 col-form-label']) }}
+            <div class="col-12 col-sm-10 col-md-10 col-lg-11">
                 @guest
                     {{ Form::text('email', '', ['type' => 'email', 'placeholder' => 'E-mail address ...', 'class' => 'form-control' . ($errors->has('email') ? ' is-invalid' : '')]) }}
                 @else
@@ -48,14 +48,14 @@
                 <small class="form-text text-muted">Your e-mail will not be shared with the third parties.</small>
             </div>
         </div>
-        <!-- Form Label for the title -->
+        {{-- Form Label for the title --}}
         <div class="form-group row">
-            {{ Form::label('title', 'Title', ['class' => 'col-sm-1 col-form-label']) }}
-            <div class="col-sm-11">
+            {{ Form::label('title', 'Title', ['class' => 'col-12 col-sm-2 col-md-2 col-lg-1 col-form-label']) }}
+            <div class="col-12 col-sm-10 col-md-10 col-lg-11">
                 {{ Form::text('title', '', ['type' => 'text', 'placeholder' => 'Title of the message ...', 'class' => 'form-control' . ($errors->has('title') ? ' is-invalid' : '')]) }}
             </div>
         </div>
-        <!-- Form Label for the message -->
+        {{-- Form Label for the message --}}
         <div class="form-group">
             {{ Form::label('message', 'Message') }}
             {{ Form::textarea('message', '', ['type' => 'text', 'placeholder' => 'Type your message here ...', 'class' => 'form-control' . ($errors->has('message') ? ' is-invalid' : '')]) }}

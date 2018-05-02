@@ -1,0 +1,8 @@
+.container {
+    position: relative;
+}
+
+#btn_delete {
+    position: absolute;
+    right: 0;
+}

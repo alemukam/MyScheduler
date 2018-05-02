@@ -7,9 +7,13 @@ use App\Group;
 use App\AdminNotification;
 use App\UserGroupRelation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class GroupController extends Controller
 {
+
+    private $description_length = 100;
+
     /**
      * Create a new controller instance.
      *
@@ -32,8 +36,10 @@ class GroupController extends Controller
         $uri = $request -> path();
 
         // get all approved groups from the data base
-        $groups = Group::where('status', 'a') -> get();
-        return view('groups.index') -> with('uri', $uri) -> with('groups', $groups);
+        if (auth() -> user() -> user_role == 'admin') $groups = Group::all();
+        else $groups = Group::where('status', 'a') -> get();
+
+        return view('groups.index') -> with('uri', $uri) -> with('groups', $groups) -> with('length', $this -> description_length);
     }
 
 
@@ -49,7 +55,7 @@ class GroupController extends Controller
 
         // 1. Whether of not the user is the moderator - find his or her groups
         // 1.1. Public groups
-        if (strtolower($user_role) == 'moderator')
+        if (strtolower($user_role) != 'basic')
         {
             $groups_approved = Group::where('moderator_id', $user_id) -> where('status', 'a') -> get(); // approved groups
             $groups_pending = Group::where('moderator_id', $user_id) -> where('status', 'p') -> get(); // awaiting approval groups
@@ -66,7 +72,7 @@ class GroupController extends Controller
         $membership_data = array('approved' => $membership_approved, 'pending' => $membership_pending);
 
         $data = array('moderator' => $groups_data, 'member' => $membership_data);
-        return view('groups.dashboard') -> with('data', $data);
+        return view('groups.dashboard') -> with('data', $data) -> with('length', $this -> description_length);
     }
 
 
@@ -151,7 +157,7 @@ class GroupController extends Controller
             $user -> save();
         }
         
-
+        unset($id, $user, $checker, $notif, $group);
         // 4. go to the dashboard with all groups of the user
         return redirect('/dashboard/groups') -> with('success', 'Request has been submitted.');
     }
@@ -168,7 +174,11 @@ class GroupController extends Controller
         $user_id = auth() -> user() -> id;
 
         // groups with status A (appvoed) are available to the public
-        if (strtolower($group -> status) != 'a' && $group -> moderator_id != $user_id) abort(404);
+        if (auth() -> user() -> user_role != 'admin')
+        {
+            if (strtolower($group -> status) != 'a' && $group -> moderator_id != $user_id) abort(404);
+        }
+        
 
         // get user status
         $user_status = $group -> userRelations() -> wherePivot('user_id', $user_id) -> first()['pivot']['status'];
@@ -244,6 +254,10 @@ class GroupController extends Controller
         // handle file upload (only if a new file is provided)
         if ($request -> hasFile('group_img'))
         {
+            // 1. delete the old file
+            if (strtolower($group -> img) != 'no_image.jpg') Storage::delete('public/imgs_g/' . $group -> img);
+
+            // 2. process the new file
             // get filename with the extension
             $fileNameWithExt = $request -> file('group_img') -> getClientOriginalName();
             // get just file name
@@ -269,7 +283,7 @@ class GroupController extends Controller
         {
             $group -> status = 'p';
 
-            $admin_req = $group -> adminNotification();
+            $admin_req = $group -> adminNotification() -> get();
             if (sizeof($admin_req) > 0)
             {
                 // initial request is available
@@ -296,8 +310,8 @@ class GroupController extends Controller
         
         $group -> save();
 
-        
-        return redirect('/dashboard/groups') -> with('success', 'Request has been submitted.');
+        unset($group, $admin_req, $user, $id);
+        return redirect('/dashboard/groups') -> with('success', 'Updates have been submitted.');
     }
 
     /**
@@ -314,6 +328,7 @@ class GroupController extends Controller
         // access control - only the moderator can edit the group
         if (strtolower($group -> status) == 'p' && $user_id != $group -> moderator_id) abort(404);
         if ($user_id != $group -> moderator_id) abort(403);
+
 
         // 1. Destroy all foreign keys
         // 1.1. Admin request
@@ -333,9 +348,25 @@ class GroupController extends Controller
 
 
         // 2. Delete the group itself
-        $group -> delete();
-        unset($group, $user_id);
+        // 2.1. Delete profile image
+        if (strtolower($group -> img) != 'no_image.jpg') Storage::delete('public/imgs_g/' . $group -> img);
 
+        // 2.2. Delete the group
+        $group -> delete();
+        unset($group);
+
+
+        // 3. set role to "basic" if the user does not have any published groups or any requests
+        $user_profile = User::find($user_id);
+        $count = sizeof($user_profile -> groups() -> get());
+
+        if ($count == 0)
+        {
+            $user_profile -> user_role = 'basic';
+            $user_profile -> save();
+        }
+
+        unset($user_profile, $user_id, $count);
         return redirect('/dashboard/groups') -> with('success', 'Your group has been deleteded.');
     }
 
@@ -345,7 +376,7 @@ class GroupController extends Controller
     // accept membership
     public function approveOfRequest($id, $group_id)
     {
-        $moderator = Group::find($group_id) -> select('moderator_id') -> first()['moderator_id'];
+        $moderator = Group::find($group_id)['moderator_id'];
         // only the moderator can approve of the membership
         if (auth() -> user() -> id == $moderator)
         {
@@ -364,7 +395,7 @@ class GroupController extends Controller
     // reject membership
     public function rejectRequest(Request $request, $id, $group_id)
     {
-        $moderator = Group::find($group_id) -> select('moderator_id') -> first()['moderator_id'];
+        $moderator = Group::find($group_id)['moderator_id'];
         // only the moderator can reject the membership
         if (auth() -> user() -> id == $moderator)
         {
@@ -393,7 +424,7 @@ class GroupController extends Controller
     // block the user
     public function blockUser(Request $request, $id, $group_id)
     {
-        $moderator = Group::find($group_id) -> select('moderator_id') -> first()['moderator_id'];
+        $moderator = Group::find($group_id)['moderator_id'];
         // only the moderator can block the user
         if (auth() -> user() -> id == $moderator)
         {
@@ -424,6 +455,10 @@ class GroupController extends Controller
     // id - group_id
     public function newJoiner($id)
     {
+        // allowed only for the status 'a'
+        $group = Group::findOrFail($id);
+        if (strtolower($group -> status) != 'a') return redirect() -> action('GroupController@dashboard');
+
         $user_id = auth() -> user() -> id;
 
         // process the request for membership
@@ -435,5 +470,26 @@ class GroupController extends Controller
 
         // redirect to the dashboard
         return redirect() -> action('GroupController@dashboard') -> with('success', 'Membership request has been sent');
+    }
+    
+
+
+    // leave group
+    // id - group id
+    public function leaveGroup($id)
+    {
+        $user_id = auth() -> user() -> id;
+        $group = Group::findOrFail($id);
+        $membership = $group -> userRelations() -> wherePivot('user_id', $user_id) -> first()['pivot'];
+        
+        if (sizeof($membership) == 0)
+        {
+            unset($user_id, $group, $membership);
+            return redirect() -> action('GroupController@dashboard');
+        }
+        $membership -> delete();
+
+        unset($user_id, $membership);
+        return redirect() -> action('GroupController@dashboard') -> with('success', 'You have left the group ' . $group -> name);
     }
 }

@@ -28,41 +28,41 @@
 
 @section('content')
     @if(Auth::user() -> id ==  $group -> moderator_id)
-    {{-- Control buttons of the group = Edit and delete --}}
-    <a href="{{ url('groups/' . $group -> id . '/edit') }}">
-        <button type="button" class="btn btn-outline-primary">Edit Group</button>
-    </a>
-    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#delete_modal">
-        Delete Group
-    </button>
-    <hr>
+        {{-- Control buttons of the group = Edit and delete --}}
+        <a href="{{ url('groups/' . $group -> id . '/edit') }}">
+            <button type="button" class="btn btn-outline-primary">Edit Group</button>
+        </a>
+        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#delete_modal">
+            Delete Group
+        </button>
+        <hr>
 
-    {{-- Confirmation box of the delete button --}}
-    <div class="modal fade" id="delete_modal" tabindex="-1" role="dialog" aria-labelledby="delete_modal_title" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="delete_modal_title">Delete Confirmation Message</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure that you want to delte the group "{{ $group['name'] }}" ?</p>
-                </div>
-                <div class="modal-footer">
-                    {!! Form::open(['action' => ['GroupController@destroy', $group -> id], 'method' => 'POST']) !!}
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        {!! Form::hidden('_method', 'DELETE') !!}
-                        {!! Form::submit('Delete Group', ['class' => 'btn btn-danger']) !!}
-                    {!! Form::close() !!}
+        {{-- Confirmation box of the delete button --}}
+        <div class="modal fade" id="delete_modal" tabindex="-1" role="dialog" aria-labelledby="delete_modal_title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="delete_modal_title">Delete Confirmation Message</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure that you want to delete the group "{{ $group['name'] }}" ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        {!! Form::open(['action' => ['GroupController@destroy', $group -> id], 'method' => 'POST']) !!}
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            {!! Form::hidden('_method', 'DELETE') !!}
+                            {!! Form::submit('Delete Group', ['class' => 'btn btn-danger']) !!}
+                        {!! Form::close() !!}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
-    {{-- Display new request of membership = approve or reject buttons --}}
+        {{-- Display new request of membership = approve or reject buttons --}}
         <h4>New Requests</h4>
         @if(sizeof($data['new_requests']) > 0)
             <table class="table table-striped">
@@ -105,7 +105,37 @@
 
     @elseif(sizeof($data['user_status']) > 0)
         @if($data['user_status'] == 'p')
-            <button type="button" class="btn btn-info" disabled>Request has been sent</button>
+            <button type="button" class="btn action-btn btn-info" disabled>Request has been sent</button>
+            <hr>
+        @elseif($data['user_status'] == 'a')
+            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#leave_modal">
+                Leave Group
+            </button>
+            <hr>
+
+            {{-- Confirmation box of the leave button --}}
+            <div class="modal fade" id="leave_modal" tabindex="-1" role="dialog" aria-labelledby="leave_modal_title" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="leave_modal_title">Leave Confirmation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure that you want to leave the group "{{ $group['name'] }}" ?</p>
+                        </div>
+                        <div class="modal-footer">
+                            {!! Form::open(['action' => ['GroupController@leaveGroup', $group -> id], 'method' => 'POST']) !!}
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                {!! Form::hidden('_method', 'DELETE') !!}
+                                {!! Form::submit('Leave', ['class' => 'btn btn-danger']) !!}
+                            {!! Form::close() !!}
+                        </div>
+                    </div>
+                </div>
+            </div>
         @endif
     @else
         {{-- Available only for status "null", send the request to the moderator --}}
@@ -162,7 +192,6 @@
             </div>
             <div class="col-12 col-sm-8 col-md-9 col-lg-10">
                 <h4>Name: {{ $group -> user['name'] }}</h4>
-                <p>{{ $group -> description }}</p>
             </div>
         </div>
     @endif

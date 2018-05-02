@@ -25,7 +25,16 @@
                     <li><a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a></li>
                     <li><a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a></li>
                 @else
-                <li><a class="nav-link{{ ($uri == 'groups' ? ' active' : '') }}" href="{{ url('groups') }}">Groups</a></li>
+                    <li>
+                        <a class="nav-link{{ ($uri == 'groups' ? ' active' : '') }}" href="{{ url('groups') }}">
+                            Groups
+                        </a>
+                    </li>
+                    @if(strtolower(Auth::user() -> user_role) == 'admin')
+                        <a class="nav-link{{ ($uri == 'finduser' ? ' active' : '') }}" href="{{ url('find-users') }}">
+                            Find Users
+                        </a>
+                    @endif
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                             {{ Auth::user() -> name }} 

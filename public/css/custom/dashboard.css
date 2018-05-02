@@ -1,0 +1,32 @@
+h1 {
+    margin-bottom: 15px;
+}
+
+img {
+    width: 200px;
+}
+
+#btn_settings {
+    margin-bottom: 25px;
+}
+
+.btn {
+    margin: 5px 0;
+}
+
+@media screen and (max-width: 575px), screen and (device-max-width: 575pxpx) {
+    img {
+        width: 200px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    form {
+        width: 200px;
+        margin: 0 auto;
+    }
+
+    #info_container {
+        margin-top: 35px;
+    }
+}
