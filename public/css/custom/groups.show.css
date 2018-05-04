@@ -1,3 +1,7 @@
+.row {
+    position: relative;
+}
+
 img {
     width: 150px;
 }
@@ -8,6 +12,15 @@ img {
 
 .action-btn:hover {
     cursor: pointer;
+}
+
+#events_title {
+    margin-right: 35px;
+}
+
+#btn_newEvent {
+    position: absolute;
+    right: 0;
 }
 
 @media screen and (min-width: 376px) and (max-width: 575px), screen and (min-width: 376px) and (max-width: 575px) {

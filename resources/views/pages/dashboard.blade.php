@@ -120,6 +120,7 @@
                 @endif
             @endforeach
         @else
+            <p>No new messages</p>
         @endif
     @endif
 @endsection

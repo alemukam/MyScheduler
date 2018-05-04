@@ -18,7 +18,7 @@ class NavigationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['homepage', 'about', 'contact', 'post_contact',]]);
+        $this->middleware('auth', ['except' => ['homepage', 'about', 'contact', 'post_contact']]);
     }
 
 

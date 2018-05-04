@@ -11,6 +11,9 @@
     @if(Auth::user() -> id ==  $group -> moderator_id || strtolower($data['user_status']) == 'a')
         <?php $date = getdate(); ?>
         <script>
+            var mainLink = '<?php echo url(''); ?>';
+            var groupID = '<?php echo $group -> id ?>'
+
             var currentDay = <?php echo $date['mday']; ?>;
             var currentMonth = <?php echo $date['mon']; ?>;
             var currentYear = <?php echo $date['year']; ?>;
@@ -159,22 +162,28 @@
     @if(Auth::user() -> id ==  $group -> moderator_id || strtolower($data['user_status']) == 'a')
         <h2 id="today" class="col-12 col-sm-8 col-md-6" onclick="renderCalendar(<?php echo $date['mon'] . ', ' . $date['year']; ?>)">Today: 年{{ $date['year'] }}月{{ $date['mon'] }}日{{ $date['mday'] }}</h2>
         <div id="render_calendar"></div>
-        <h3 id="events_title">Upcoming Group Events</h3>
+        <div class="container row">
+            <h3 id="events_title">Upcoming Group Events</h3>
+            @if(Auth::user() -> id ==  $group -> moderator_id)
+                <a id="btn_newEvent" class="btn btn-outline-success" href="{{ url('/groups/' . $group -> id . '/group-events/create') }}">Create new Event</a>
+            @endif
+        </div>
+
         @if(sizeof($group_events) > 0)
-            <div id="group_events">
-                <table class="table table-bordered">
-                    <thead>
+            <div>
+                <table id="events_table" class="table table-bordered">
+                    <thead id="group_events">
                         <tr>
                             <th>Date</th>
                             <th>Title</th>
                             <th>Start Time</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="render_events">
                         @foreach($group_events as $event)
                             <tr>
-                                <td>{{ date('年Y月n日d', strtotime($event['date'])) }}</td>
-                                <td>{{ $event['title'] }}</td>
+                                <td>{{ date('年Y月n日j', strtotime($event['date'])) }}</td>
+                                <td><a href="{{ url('/groups/'. $event['group_id'] .'/group-events/'. $event['id']) }}">{{ $event['title'] }}</a></td>
                                 <td>{{ $event['start_time'] }}</td>   
                             </tr>
                         @endforeach

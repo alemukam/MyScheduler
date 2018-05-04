@@ -187,7 +187,8 @@ class GroupController extends Controller
         // for all members and moderator
         if ($user_status == 'a' || $group -> moderator_id == $user_id)
         {
-            $group_events = $group['groupEvents'] -> where('date', '>=', date("Y-m-d")) -> sortBy('date') -> sortBy('start_time') -> take(5);
+            $group_events = $group -> groupEvents() -> where('date', '>=', date("Y-m-d"))
+            -> orderBy('date', 'asc') -> orderBy('start_time', 'asc') -> take(5) -> get();
         }
         else $group_events = null;
         // only for admin

@@ -50,6 +50,8 @@ Route::resource('groups', 'GroupController');
 Route::get('/dashboard/groups', 'GroupController@dashboard');
 Route::post('groups/{id}/newjoiner', 'GroupController@newJoiner');
 Route::delete('/groups/{id}/leave', 'GroupController@leaveGroup');
+// Group events
+Route::resource('/groups/{group_id}/group-events', 'Event_GroupController', ['except' => ['index']]);
 
 
 
