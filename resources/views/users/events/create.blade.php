@@ -13,8 +13,8 @@
 @endsection
 
 @section('content')
-    <h1>Create New Event for "{{ $data['name'] }}"</h1>
-    {!! Form::open(['action' => ['Event_GroupController@store', $data['id']], 'method' => 'POST']) !!}
+    <h1>Create New Personal Event</h1>
+    {!! Form::open(['action' => 'Event_UserController@store', 'method' => 'POST']) !!}
         {{-- 1) Title of the event --}}
         <div class="form-group">
             {{ Form::label('title', 'Title') }}

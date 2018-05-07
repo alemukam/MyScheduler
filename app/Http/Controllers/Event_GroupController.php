@@ -56,7 +56,7 @@ class Event_GroupController extends Controller
         // basic validation
         $this -> validate($request, [
             'title' => 'required | max: 35',
-            'date' => 'required | date',
+            'date' => 'required | date | after_or_equal: today',
             'start_time' => 'required',
             'end_time' => 'required',
             'description' => 'required'
@@ -69,17 +69,17 @@ class Event_GroupController extends Controller
 
         // timestamp validation
         unset($user_id, $group);
-        // 1. not allowed to create new events in the past
-        if ($date < date("Y-m-d") || $start_time < date("H:i:s"))
-        {
-            return view('groups.events.create') -> with('data', $data) -> with('validation_failed', 'Events in the past are not allowed.');
-        }
-        // 3. correct input format
-        if ($start_time === false || $end_time === false)
+        // 1. incorrect input format
+        if ($start_time === false || $end_time === false || $date === false)
         {
             return view('groups.events.create') -> with('data', $data) -> with('validation_failed', 'Incorrect time format.');
         }
-        // 4. correct sequence
+        // 2. not allowed to create new events in the past
+        if ($date == date('Y-m-d') && $start_time < date("H:i:s"))
+        {
+            return view('groups.events.create') -> with('data', $data) -> with('validation_failed', 'Events in the past are not allowed.');
+        }
+        // 3. incorrect sequence
         elseif ($start_time >= $end_time)
         {
             return view('groups.events.create') -> with('data', $data) -> with('validation_failed', 'Start time cannot be before end time.');
@@ -111,8 +111,16 @@ class Event_GroupController extends Controller
         // get user status
         $user_status = $group -> userRelations() -> wherePivot('user_id', $user_id) -> first()['pivot']['status'];
 
-        // only group moderator can perform this action
-        if ($user_status == 'a' || $group -> moderator_id != $user_id) 
+        // only group members can access the event
+        if (sizeof($user_status) == 0)
+        {
+            if ($group -> moderator_id != $user_id)
+            {
+                unset($user_id, $group, $user_status);
+                abort(403); 
+            }
+        }
+        elseif ($user_status != 'a') 
         { 
             unset($user_id, $group, $user_status);
             abort(403); 
@@ -219,9 +227,11 @@ class Event_GroupController extends Controller
         // only group moderator can perform this action
         if ($group -> moderator_id != $user_id) { unset($user_id, $group); abort(403); }
 
+        $event_name = $event -> title;
+
         $event -> delete();
         unset($user_id, $group);
-        return redirect() -> action('GroupController@show', ['id' => $group_id]) -> with('success', 'Event "'. $event -> title .'" has been deleted.');
+        return redirect() -> action('GroupController@show', ['id' => $group_id]) -> with('success', 'Event "'. $event_name .'" has been deleted.');
     }
 
 

@@ -1,0 +1,16 @@
+#user_events {
+    margin-bottom: 35px;
+}
+
+.row {
+    position: relative;
+}
+
+#btn_newEvent {
+    position: absolute;
+    right: 0;
+}
+
+.u_events {
+    margin-top: 20px;
+}

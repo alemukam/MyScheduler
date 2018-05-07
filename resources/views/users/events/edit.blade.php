@@ -7,10 +7,9 @@
 @endsection
 
 @section('content')
-    <h1>Update event "{{ $event['title'] }}"</h1>
-    <small>Group: <strong>{{ $event -> group['name'] }}</strong></small>
+    <h1>Update Event "{{ $event['title'] }}"</h1>
     <hr>
-    {!! Form::open(['action' => ['Event_GroupController@update', $event -> group['id'], $event['id']], 'method' => 'POST']) !!}
+    {!! Form::open(['action' => ['Event_UserController@update', $event['id']], 'method' => 'POST']) !!}
         {{-- 1) Title of the event --}}
         <div class="form-group">
             {{ Form::label('title', 'Title') }}

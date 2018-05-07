@@ -40,15 +40,17 @@ class NavigationController extends Controller
             $current_day = $current_day['mday'];
 
             // get events of the user
-            $id = auth() -> user() -> id;
-            $user_events = User::find($id) -> userEvents() -> take(5) -> get();
-            $groups = User::find($id) -> groupRelations;
-            //return $groups;
-            //$groups = UserGroupRelation::where('user_id', $id) -> pluck('group_id') -> toArray();
-            //$group_events = GroupEvent::where('')
+            $user = User::find(auth() -> user() -> id);
+            // get personal user events
+            $user_events = $user -> userEvents() -> where('date', '>=', date('Y-m-d'))
+            -> orderBy('date', 'asc') -> orderBy('start_time', 'asc') -> take(5) -> get();
+
+            // get group events
+            // get IDs of the groups where the user is present
+            $group_events = $user -> groupEvents() -> take(5) -> get();
 
             return view('pages.start_auth') -> with('date', ['day' => $current_day, 'month' => $current_month, 'year' => $current_year])
-            -> with('type', 'user');
+            -> with('u_events', $user_events) -> with('g_events', $group_events);
         }
     }
 

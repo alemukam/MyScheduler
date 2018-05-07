@@ -52,7 +52,7 @@
                                 myCalendar
                             </a>
                             <a class="dropdown-item" href="{{ url('/dashboard/groups') }}">
-                                My Groups
+                                myGroups
                             </a>
                             <a class="dropdown-item" href="{{ route('logout') }}"
                                onclick="event.preventDefault();

@@ -170,26 +170,24 @@
         </div>
 
         @if(sizeof($group_events) > 0)
-            <div>
-                <table id="events_table" class="table table-bordered">
-                    <thead id="group_events">
+            <table id="events_table" class="table table-bordered">
+                <thead id="group_events">
+                    <tr>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Start Time</th>
+                    </tr>
+                </thead>
+                <tbody id="render_events">
+                    @foreach($group_events as $event)
                         <tr>
-                            <th>Date</th>
-                            <th>Title</th>
-                            <th>Start Time</th>
+                            <td>{{ date('年Y月n日j', strtotime($event['date'])) }}</td>
+                            <td><a href="{{ url('/groups/'. $event['group_id'] .'/group-events/'. $event['id']) }}">{{ $event['title'] }}</a></td>
+                            <td>{{ $event['start_time'] }}</td>   
                         </tr>
-                    </thead>
-                    <tbody id="render_events">
-                        @foreach($group_events as $event)
-                            <tr>
-                                <td>{{ date('年Y月n日j', strtotime($event['date'])) }}</td>
-                                <td><a href="{{ url('/groups/'. $event['group_id'] .'/group-events/'. $event['id']) }}">{{ $event['title'] }}</a></td>
-                                <td>{{ $event['start_time'] }}</td>   
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         @else
             <p>There are no events</p>
         @endif
