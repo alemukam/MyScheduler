@@ -11,12 +11,12 @@
     @if(Auth::user() -> id ==  $group -> moderator_id || strtolower($data['user_status']) == 'a')
         <?php $date = getdate(); ?>
         <script>
-            var mainLink = '<?php echo url(''); ?>';
-            var groupID = '<?php echo $group -> id ?>'
+            var mainLink = '{{ url('') }}';
+            var groupID = '{{ $group -> id }}';
 
-            var currentDay = <?php echo $date['mday']; ?>;
-            var currentMonth = <?php echo $date['mon']; ?>;
-            var currentYear = <?php echo $date['year']; ?>;
+            var currentDay = {{ $date['mday'] }};
+            var currentMonth = {{ $date['mon'] }};
+            var currentYear = {{ $date['year'] }};
         </script>
         <script src="{{ asset('js/classes/Calendar.js') }}"></script>
         <script src="{{ asset('js/custom/calendar.js') }}"></script>

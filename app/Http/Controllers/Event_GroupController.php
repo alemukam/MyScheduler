@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Group;
 use App\GroupEvent;
-use App\Http\Resources\GroupEvent as ResourceFroupEvent;
+use App\Http\Resources\GroupEvent as ResourceGroupEvent;
 
 use App\Http\Requests;
 use Illuminate\Http\Request;
@@ -243,8 +243,8 @@ class Event_GroupController extends Controller
         $str_date = $request -> input('year') . '-' . $request -> input('month') . '-' . $request -> input('day');
 
         $group = Group::findOrFail($id) -> groupEvents() -> where('date', $str_date)
-                        -> orderBy('date', 'asc') -> orderBy('start_time', 'asc') -> take(5) -> get();
+                        -> orderBy('date', 'asc') -> orderBy('start_time', 'asc') -> get();
 
-        return ResourceFroupEvent::collection($group);
+        return ResourceGroupEvent::collection($group);
     }
 }

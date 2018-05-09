@@ -1,3 +1,8 @@
+{{-- Update locale if necessary --}}
+@if(Session::has('lang'))
+    {{ app() -> setLocale(Session::get('lang')) }}
+@endif
+
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
 <head>
@@ -17,6 +22,13 @@
     <!-- Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script>
+        $(document).ready(function() {
+            $('#lang_dropdown').on('change', function() {
+                $('#lang_form').submit();
+            });
+        });
+    </script>
     @yield('js-files')
 
     <!-- Fonts -->

@@ -61,3 +61,8 @@ Route::resource('/user-events', 'Event_UserController', ['except' => ['index']])
 Route::put('/approve/{id}/{group_id}', 'GroupController@approveOfRequest');
 Route::delete('/reject/{id}/{group_id}', 'GroupController@rejectRequest');
 Route::put('/block/{id}/{group_id}', 'GroupController@blockUser');
+
+
+
+// Locale
+Route::post('set-lang', 'LocaleController@setLang');

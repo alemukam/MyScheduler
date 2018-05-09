@@ -3,6 +3,7 @@ var apiLink = mainLink + '/api/group-events' + '/' + groupID;
 function getEvents(day, month, year) {
     $.ajax({
         url: apiLink,
+        type: 'GET',
         data: {
             'day': day,
             'month': month,

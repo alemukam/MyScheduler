@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use App\UserEvent;
+use App\Http\Resources\GroupEvent_GroupName as ResourceGroupEvent;
+use App\Http\Resources\UserEvent as ResourceUserEvent;
+
 use Illuminate\Http\Request;
 
 class Event_UserController extends Controller
@@ -203,8 +207,19 @@ class Event_UserController extends Controller
 
 
     // API - get events on a particular day
-    public function getEventsOnDate(Request $request)
+    public function getEventsOnDate(Request $request, $id)
     {
-        
+        $str_date = $request -> input('year') . '-' . $request -> input('month') . '-' . $request -> input('day');
+
+        $user = User::findOrFail($id);
+        // User personal events
+        $user_events = $user -> userEvents() -> where('date', $str_date) -> get();
+        // User group events
+        $group_events = $user -> groupEvents() -> join('groups', 'groups.id', '=', 'group_events.group_id') -> where('date', $str_date)
+        -> select('group_events.*', 'groups.name as group_name') -> get();
+        unset($user, $str_date);
+
+        // merge results
+        return array('user' => ResourceUserEvent::collection($user_events), 'group' => ResourceGroupEvent::collection($group_events));
     }
 }

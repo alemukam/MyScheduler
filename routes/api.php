@@ -18,4 +18,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::get('group-events/{id}', 'Event_GroupController@getEventsOnDate');
+Route::get('/group-events/{id}', 'Event_GroupController@getEventsOnDate');
+Route::get('/user-events/{id}', 'Event_UserController@getEventsOnDate');

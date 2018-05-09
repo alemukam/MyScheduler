@@ -7,9 +7,12 @@
 
 @section('js-files')
     <script>
-        var currentDay = <?php echo $date['day']; ?>;
-        var currentMonth = <?php echo $date['month']; ?>;
-        var currentYear = <?php echo $date['year']; ?>;
+        var mainLink = '{{ url('') }}';
+        var id = {{ Auth::user() -> id }};
+
+        var currentDay = {{ $date['day'] }};
+        var currentMonth = {{ $date['month'] }};
+        var currentYear = {{ $date['year'] }};
     </script>
     <script src="{{ asset('js/classes/Calendar.js') }}"></script>
     <script src="{{ asset('js/custom/calendar.js') }}"></script>
@@ -26,7 +29,7 @@
     <div id="render_calendar"></div>
 
     <div class="container row">
-        <h2>Upcoming events</h2>
+        <h2 id="events_title">Upcoming events</h2>
     </div>
     {{-- User Events --}}
     <div id="user_events">
@@ -38,7 +41,7 @@
             <p class="u_events">No have no personal events</p>
         @else
             <table id="u_events_table" class="table table-bordered u_events">
-                <thead>
+                <thead id="u_events">
                     <tr>
                         <th>Date</th>
                         <th>Title</th>
@@ -64,7 +67,7 @@
             <p>You have no group events</p>
         @else
             <table id="g_events_table" class="table table-bordered">
-                <thead>
+                <thead id="g_events">
                     <tr>
                         <th>Date</th>
                         <th>Title</th>
