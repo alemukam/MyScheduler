@@ -21,7 +21,8 @@ class GroupController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this -> middleware('auth');
+        $this -> middleware('check_block');
     }
 
 
@@ -95,6 +96,9 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+
         $this -> validate($request, [
             'name' => 'required | max: 32',
             'description' => 'required',
@@ -123,7 +127,19 @@ class GroupController extends Controller
 
         // 1.1. it is not allowed to create two groups with the same name
         $checker = Group::where('name', $request -> input('name')) -> get();
-        if (sizeof($checker) > 0) return view('groups.create') -> with('validation_failed', 'Group with this name already exists');
+        if (sizeof($checker) > 0)
+        {
+            switch ($lang)
+            {
+                case 'jp':
+                    $msg = 'この名前のグループはすでに存在します。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Group with this name already exists.';
+            }
+            return view('groups.create') -> with('validation_failed', $msg);
+        }
 
         // 1.2. create a new pending group
         $group = new Group;
@@ -158,8 +174,18 @@ class GroupController extends Controller
         }
         
         unset($id, $user, $checker, $notif, $group);
+
         // 4. go to the dashboard with all groups of the user
-        return redirect('/dashboard/groups') -> with('success', 'Request has been submitted.');
+        switch ($lang)
+        {
+            case 'jp':
+                $msg = 'リクエストが提出されました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Request has been submitted.';
+        }
+        return redirect('/dashboard/groups') -> with('success', $msg);
     }
 
     /**
@@ -233,6 +259,9 @@ class GroupController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+
         $user_id = auth() -> user() -> id;
         $group = Group::findOrfail($id);
 
@@ -312,7 +341,17 @@ class GroupController extends Controller
         $group -> save();
 
         unset($group, $admin_req, $user, $id);
-        return redirect('/dashboard/groups') -> with('success', 'Updates have been submitted.');
+
+        switch ($lang)
+        {
+            case 'jp':
+                $msg = '更新が提出されました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Updates have been submitted.';
+        }
+        return redirect('/dashboard/groups') -> with('success', $msg);
     }
 
     /**
@@ -321,8 +360,11 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+
         $user_id = auth() -> user() -> id;
         $group = Group::findOrfail($id);
 
@@ -368,14 +410,24 @@ class GroupController extends Controller
         }
 
         unset($user_profile, $user_id, $count);
-        return redirect('/dashboard/groups') -> with('success', 'Your group has been deleteded.');
+
+        switch ($lang)
+        {
+            case 'jp':
+                $msg = 'あなたのグループは削除されました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Your group has been deleted.';
+        }
+        return redirect('/dashboard/groups') -> with('success', $msg);
     }
 
 
     // Moderator events for membership requests
     // $id - table UserGroupRelations; $group_id - id of the subject group
     // accept membership
-    public function approveOfRequest($id, $group_id)
+    public function approveOfRequest($id, $group_id, Request $request)
     {
         $moderator = Group::find($group_id)['moderator_id'];
         // only the moderator can approve of the membership
@@ -385,7 +437,20 @@ class GroupController extends Controller
             $membership -> status = 'a'; // a - status is approved
             $membership -> save();
 
-            return redirect() -> action('GroupController@show', ['id' => $group_id]) -> with('success', 'Membership approved for ' . $membership -> user() -> first()['name']);
+            $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+            $msg = '';
+
+            switch ($lang)
+            {
+                case 'jp':
+                    $msg = $membership -> user() -> first()['name'] . 'のメンバーシップが承認されました。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Membership approved for ' . $membership -> user() -> first()['name'];
+            }
+
+            return redirect() -> action('GroupController@show', ['id' => $group_id]) -> with('success', $msg);
         }
         else return redirect() -> action('GroupController@show', ['id' => $group_id]);
     }
@@ -400,17 +465,53 @@ class GroupController extends Controller
         // only the moderator can reject the membership
         if (auth() -> user() -> id == $moderator)
         {
+            $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+            $msg = '';
+
+
             $membership = UserGroupRelation::find($id);
             $membership -> delete(); // for rejected - delete a row from the table
 
             // mod_action - isset == false when the moderator rejects the initial request
             if ($request -> input('mod_action') !== null)
             {
-                if (strtolower($request -> input('mod_action')) == 'unblock') $msg = 'User ' . $membership -> user() -> first()['name'] . ' has been unblocked';
-                elseif (strtolower($request -> input('mod_action')) == 'expel') $msg = 'User ' . $membership -> user() -> first()['name'] . ' has been expelled from the group';
-                else $msg = '';
+                if (strtolower($request -> input('mod_action')) == 'unblock')
+                {
+                    switch ($lang)
+                    {
+                        case 'jp':
+                            $msg = 'ユーザー' . $membership -> user() -> first()['name'] . 'はブロック解除されました。';
+                            break;
+                        case 'en';
+                        default:
+                            $msg = 'User ' . $membership -> user() -> first()['name'] . ' has been unblocked.';
+                    }
+                }
+                elseif (strtolower($request -> input('mod_action')) == 'expel')
+                {
+                    switch ($lang)
+                    {
+                        case 'jp':
+                            $msg = 'ユーザー' . $membership -> user() -> first()['name'] . 'はグループから追放されました。';
+                            break;
+                        case 'en':
+                        default:
+                            $msg = 'User ' . $membership -> user() -> first()['name'] . ' has been expelled from the group.';
+                    }
+                }
             }
-            else $msg = 'Membership rejected for ' . $membership -> user() -> first()['name'];
+            else
+            {
+                switch ($lang)
+                {
+                    case 'jp':
+                        $msg = $membership -> user() -> first()['name'] . 'のメンバーシップ拒否';
+                        break;
+                    case 'en':
+                    default:
+                        $msg = 'Membership rejected for ' . $membership -> user() -> first()['name'];
+                }
+            }
 
 
             // display the notification to the moderator
@@ -429,6 +530,10 @@ class GroupController extends Controller
         // only the moderator can block the user
         if (auth() -> user() -> id == $moderator)
         {
+            $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+            $msg = '';
+
+
             $membership = UserGroupRelation::find($id);
             $membership -> status = 'b'; // b - status for blocked
             $membership -> save();
@@ -437,10 +542,31 @@ class GroupController extends Controller
             // mod_action - isset == false when the moderator block the user by the initial request
             if ($request -> input('mod_action') !== null)
             {
-                if (strtolower($request -> input('mod_action')) == 'expel') $msg = 'User ' . $membership -> user() -> first()['name'] . ' has been expelled from the group and blocked';
-                else $msg = '';
+                if (strtolower($request -> input('mod_action')) == 'expel')
+                {
+                    switch ($lang)
+                    {
+                        case 'jp':
+                            $msg = 'ユーザー' . $membership -> user() -> first()['name'] . 'はグループから追放され、ブロックされました。';
+                            break;
+                        case 'en':
+                        default:
+                        $msg = 'User ' . $membership -> user() -> first()['name'] . ' has been expelled from the group and blocked';
+                    }
+                }
             }
-            else $msg = 'User ' . $membership -> user() -> first()['name'] . ' has been blocked';
+            else
+            {
+                switch ($lang)
+                {
+                    case 'jp':
+                        $msg = 'ユーザー' . $membership -> user() -> first()['name'] . 'はブロックされました。';
+                        break;
+                    case 'en':
+                    default:
+                        $msg = 'User ' . $membership -> user() -> first()['name'] . ' has been blocked.';
+                }
+            }
 
 
             // display the notification of that the moderator has performed
@@ -454,7 +580,7 @@ class GroupController extends Controller
 
     // process a request for membership
     // id - group_id
-    public function newJoiner($id)
+    public function newJoiner($id, Request $request)
     {
         // allowed only for the status 'a'
         $group = Group::findOrFail($id);
@@ -469,15 +595,27 @@ class GroupController extends Controller
         $req -> status = 'p'; // p = pending
         $req -> save();
 
+
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+        switch ($lang)
+        {
+            case 'jp':
+                $msg = 'メンバーシップリクエストが送信されました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Membership request has been sent.';
+        }
         // redirect to the dashboard
-        return redirect() -> action('GroupController@dashboard') -> with('success', 'Membership request has been sent');
+        return redirect() -> action('GroupController@dashboard') -> with('success', $msg);
     }
     
 
 
     // leave group
     // id - group id
-    public function leaveGroup($id)
+    public function leaveGroup($id, Request $request)
     {
         $user_id = auth() -> user() -> id;
         $group = Group::findOrFail($id);
@@ -491,6 +629,18 @@ class GroupController extends Controller
         $membership -> delete();
 
         unset($user_id, $membership);
-        return redirect() -> action('GroupController@dashboard') -> with('success', 'You have left the group ' . $group -> name);
+
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+        switch ($lang)
+        {
+            case 'jp':
+                $msg = 'あなたはグループ' . $group -> name . 'を離れました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'You have left the group ' . $group -> name . '.';
+        }
+        return redirect() -> action('GroupController@dashboard') -> with('success', $msg);
     }
 }

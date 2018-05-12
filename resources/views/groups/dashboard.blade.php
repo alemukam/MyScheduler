@@ -1,4 +1,8 @@
 @extends('layouts.app')
+{{-- Update locale if necessary --}}
+@php
+    if (Session::has('lang')) app() -> setLocale(Session::get('lang'));
+@endphp
 
 @section('css-files')
     <link href="{{ asset('css/custom/groups.dashboard.css') }}" rel="stylesheet">
@@ -21,20 +25,20 @@
             else $gr_approved = $gr_pending = $gr_rejected = 0;
         @endphp
 
-        <h1>My Groups</h1>
-        <small>In this section there are the groups which have been created by you</small>
+        <h1>{{ __('groups/dashboard.header') }}</h1>
+        <small>{{ __('groups/dashboard.header_sub') }}</small>
         <hr>
         <div class="container nav-buttons">
             <div class="row">
-                <input id="btn_activeGr" class="col-12 col-sm-4 btn btn-outline-primary active" type="button" value="Active Groups">
-                <input id="btn_pendingGr" class="col-12 col-sm-4 btn btn-outline-primary" type="button" value="Awaiting Approval">
-                <input id="btn_rejectedGr" class="col-12 col-sm-4 btn btn-outline-primary" type="button" value="Rejected">
+                <input id="btn_activeGr" class="col-12 col-sm-4 btn btn-outline-primary active" type="button" value="{{ __('groups/dashboard.btn_active') }}">
+                <input id="btn_pendingGr" class="col-12 col-sm-4 btn btn-outline-primary" type="button" value="{{ __('groups/dashboard.btn_pending') }}">
+                <input id="btn_rejectedGr" class="col-12 col-sm-4 btn btn-outline-primary" type="button" value="{{ __('groups/dashboard.btn_rejected') }}">
             </div>
         </div>
 
         {{-- Display all published (active) groups --}}
         <div id="div_activeGr">
-            <h3>My Published Groups</h3>
+            <h3>{{ __('groups/dashboard.active_header') }}</h3>
             @if($gr_approved > 0)
                 @foreach($data['moderator']['approved'] as $appr)
                     <div class="row">
@@ -55,14 +59,14 @@
                     @endif
                 @endforeach
             @else
-                <h5>You have no published groups</h5>
+                <h5>{{ __('groups/dashboard.no_active') }}</h5>
             @endif
         </div>
 
 
         {{-- Display all groups in the approval stage --}}
         <div id="div_pendingGr">
-            <h3>My Groups Awaiting Approval</h3>
+            <h3>{{ __('groups/dashboard.pending_header') }}</h3>
             @if($gr_pending > 0)
                 @foreach($data['moderator']['pending'] as $pend)
                     <div class="row">
@@ -83,16 +87,16 @@
                     @endif
                 @endforeach
             @else
-                <h5>You have submitted no requests for group publishing</h5>
+                <h5>{{ __('groups/dashboard.no_pending') }}</h5>
             @endif
         </div>
 
 
         {{-- Display all rejected groups --}}
         <div id="div_rejectedGr">
-            <h3>My Rejected Groups</h3>
+            <h3>{{ __('groups/dashboard.rejected_header') }}</h3>
             @if($gr_rejected > 0)
-                <small>Please read the message from the administrator and correct all compliance mistakes. If you have some questions, please, do not hesitate to contact the administrator via the <a href="{{ url('/contact') }}">contact form</a>.</small>
+                <small>{{ __('groups/dashboard.rejected_sub') }} <a href="{{ url('/contact') }}">{{ __('groups/dashboard.rejected_sub_a') }}</a>.</small>
                 <hr>
                 @foreach($data['moderator']['rejected'] as $rej)
                     <div class="row">
@@ -101,7 +105,7 @@
                         </div>
                         <div class="col-12 col-sm-8 col-md-9 col-lg-10">
                             <h4><a href="{{ url('groups/' . $rej -> id) }}">{{ $rej -> name }}</a></h4>
-                            <p>Message from the administrator: "{{ $rej -> adminNotification['admin_message'] }}"</p>
+                            <p>{{ __('groups/dashboard.rejected_msg') }}: "{{ $rej -> adminNotification['admin_message'] }}"</p>
                         </div>
                     </div>
                     @if(!$loop -> last)
@@ -109,7 +113,7 @@
                     @endif
                 @endforeach
             @else
-                <h5>You have no rejected requests</h5>
+                <h5>{{ __('groups/dashboard.no_rejected') }}</h5>
             @endif
         </div>
 
@@ -126,20 +130,20 @@
         $mem_pending = sizeof($data['member']['pending']);
     @endphp
 
-    <h1>Membership Groups</h1>
-    <small>This section shows all groups to which you are subscribed. You are not a moderator of these groups</small>
+    <h1>{{ __('groups/dashboard.header2') }}</h1>
+    <small>{{ __('groups/dashboard.header2_sub') }}</small>
     <hr>
     @if($mem_approved + $mem_pending > 0)
         <div class="container nav-buttons">
             <div class="row">
-                <input id="btn_activeMem" class="col-12 col-sm-6 btn btn-outline-primary active" type="button" value="Approved Membership">
-                <input id="btn_pendingMem" class="col-12 col-sm-6 btn btn-outline-primary" type="button" value="Awaiting Approval">
+                <input id="btn_activeMem" class="col-12 col-sm-6 btn btn-outline-primary active" type="button" value="{{ __('groups/dashboard.btn_approved2') }}">
+                <input id="btn_pendingMem" class="col-12 col-sm-6 btn btn-outline-primary" type="button" value="{{ __('groups/dashboard.btn_pending') }}">
             </div>
         </div>
 
         {{-- Display all accepted membership --}}
         <div id="div_activeMem">
-            <h3>My Approved Membership</h3>
+            <h3>{{ __('groups/dashboard.approved_header2') }}</h3>
             @if($mem_approved > 0)
                 @foreach($data['member']['approved'] as $appr)
                     <div class="row">
@@ -153,7 +157,7 @@
                             @else
                                 <p>{{ substr($appr -> group['description'], 0, $length) . ' . . .' }}</p>
                             @endif
-                            <small>Group Moderator: {{ $appr -> group -> user['name'] }}</small>
+                            <small>{{ __('groups/dashboard.mod') }}: {{ $appr -> group -> user['name'] }}</small>
                         </div>
                     </div>
                     @if(!$loop -> last)
@@ -161,14 +165,14 @@
                     @endif
                 @endforeach
             @else
-                <h5>You are not a member of any group</h5>
+                <h5>{{ __('groups/dashboard.no_approved2') }}</h5>
             @endif
         </div>
 
 
         {{-- Display all pending membership requests --}}
         <div id="div_pendingMem">
-            <h3>My Membership Requests</h3>
+            <h3>{{ __('groups/dashboard.pending_header2') }}</h3>
             @if($mem_pending > 0)
                 @foreach($data['member']['pending'] as $pend)
                     <div class="row">
@@ -182,7 +186,7 @@
                             @else
                                 <p>{{ substr($pend -> group['description'], 0, $length) . ' . . .' }}</p>
                             @endif
-                            <small>Group Moderator: {{ $pend -> group -> user['name'] }}</small>
+                            <small>{{ __('groups/dashboard.mod') }}: {{ $pend -> group -> user['name'] }}</small>
                         </div>
                     </div>
                     @if(!$loop -> last)
@@ -190,11 +194,11 @@
                     @endif
                 @endforeach
             @else
-                <h5>You have not submitted any membership request</h5>
+                <h5>{{ __('groups/dashboard.no_pending2') }}</h5>
             @endif
         </div>
     @else
-        <p>You are not a member of any group</p>
-        <a href="{{ url('groups') }}"><button type="button" class="btn btn-outline-primary btn-lg btn-block">See all available groups</button></a>
+        <p>{{ __('groups/dashboard.no_membership') }}</p>
+        <a href="{{ url('groups') }}"><button type="button" class="btn btn-outline-primary btn-lg btn-block">{{ __('groups/dashboard.all_groups') }}</button></a>
     @endif
 @endsection

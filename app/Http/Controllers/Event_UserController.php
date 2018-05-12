@@ -18,7 +18,8 @@ class Event_UserController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['getEventsOnDate']]);
+        $this -> middleware('auth', ['except' => ['getEventsOnDate']]);
+        $this -> middleware('check_block', ['except' => ['getEventsOnDate']]);
     }
 
 
@@ -45,6 +46,9 @@ class Event_UserController extends Controller
      */
     public function store(Request $request)
     {
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+
         // basic validation
         $this -> validate($request, [
             'title' => 'required | max: 35',
@@ -63,17 +67,44 @@ class Event_UserController extends Controller
         // 1. incorrect input format
         if ($start_time === false || $end_time === false || $date === false)
         {
-            return view('users.events.create') -> with('validation_failed', 'Incorrect time format.');
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = '時刻形式が正しくありません。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Incorrect time format.';
+            }
+            return view('users.events.create') -> with('validation_failed', $msg);
         }
         // 2. not allowed to create new events in the past
         if ($date == date('Y-m-d') && $start_time < date("H:i:s"))
         {
-            return view('users.events.create') -> with('validation_failed', 'Events in the past are not allowed.');
+            switch ($lang)
+            {
+                case 'jp':
+                    $msg = '過去のイベントは許可されていません。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Events in the past are not allowed.';
+            }
+            return view('users.events.create') -> with('validation_failed', $msg);
         }
         // 3. incorrect sequence
         elseif ($start_time >= $end_time)
         {
-            return view('users.events.create') -> with('validation_failed', 'Start time cannot be before end time.');
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = '開始時刻は終了時刻の前にすることはできません。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Start time cannot be before end time.';
+            }
+            return view('users.events.create') -> with('validation_failed', $msg);
         }
 
 
@@ -88,8 +119,17 @@ class Event_UserController extends Controller
         $event -> save();
 
 
+        switch ($lang) 
+        {
+            case 'jp':
+                $msg = '新しいイベントが作成されました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'New event has been created.';
+        }
         unset($event, $date, $start_time, $end_time);
-        return redirect() -> action('NavigationController@homepage') -> with('success', 'New event has been created.');
+        return redirect() -> action('NavigationController@homepage') -> with('success', $msg);
     }
 
     /**
@@ -133,6 +173,9 @@ class Event_UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+
         // validate the uri input
         $event = UserEvent::findOrFail($id);
         // validate access rights - only the owner can update the event
@@ -156,17 +199,44 @@ class Event_UserController extends Controller
         // 1. incorrect input format
         if ($start_time === false || $end_time === false || $date === false)
         {
-            return view('users.events.edit') -> with('event', $event) -> with('validation_failed', 'Incorrect time format.');
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = '時刻形式が正しくありません。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Incorrect time format.';
+            }
+            return view('users.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
         }
         // 2. not allowed to create new events in the past
         if ($date == date('Y-m-d') && $start_time < date("H:i:s"))
         {
-            return view('users.events.edit') -> with('event', $event) -> with('validation_failed', 'Events in the past are not allowed.');
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = '過去のイベントは許可されていません。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Events in the past are not allowed.';
+            }
+            return view('users.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
         }
         // 3. incorrect sequence
         elseif ($start_time >= $end_time)
         {
-            return view('users.events.edit') -> with('event', $event) -> with('validation_failed', 'Start time cannot be before end time.');
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = '開始時刻は終了時刻の前にすることはできません。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Start time cannot be before end time.';
+            }
+            return view('users.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
         }
 
 
@@ -182,7 +252,17 @@ class Event_UserController extends Controller
 
         $event_name = $event -> title;
         unset($event, $date, $start_time, $end_time);
-        return redirect() -> action('NavigationController@homepage') -> with('success', 'Event "'. $event_name .'" has been updated.');
+
+        switch ($lang) 
+        {
+            case 'jp':
+                $msg = 'イベント"'. $event_name .'"が更新されました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Event "'. $event_name .'" has been updated.';
+        }
+        return redirect() -> action('NavigationController@homepage') -> with('success', $msg);
     }
 
     /**
@@ -191,8 +271,11 @@ class Event_UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+
         // validate the uri input
         $event = UserEvent::findOrFail($id);
         // validate access rights - only the owner can delete the event
@@ -201,7 +284,17 @@ class Event_UserController extends Controller
 
         $event_name = $event -> title;
         $event -> delete();
-        return redirect() -> action('NavigationController@homepage') -> with('success', 'Event "'. $event_name .'" has been deleted.');
+
+        switch ($lang)
+        {
+            case 'jp':
+                $msg = 'イベント"'. $event_name .'"が削除されました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Event "'. $event_name .'" has been deleted.';
+        }
+        return redirect() -> action('NavigationController@homepage') -> with('success', $msg);
     }
 
 

@@ -18,6 +18,7 @@ class DashboardController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this -> middleware('check_block');
     }
 
 
@@ -47,10 +48,22 @@ class DashboardController extends Controller
      */
     public function updateImage(Request $request)
     {
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+
         // if no image is provided exit the function right away
         if (!$request -> hasFile('user_img'))
-        {
-            return redirect('/dashboard') -> with('error', 'No image provided.');
+        { 
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = '画像がありません。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'No image provided.';
+            }
+            return redirect('/dashboard') -> with('error', $msg);
         }
 
         // process the upload
@@ -83,7 +96,17 @@ class DashboardController extends Controller
         $user_profile -> save();
 
         unset($user_id, $user_profile);
-        return redirect('/dashboard') -> with('success', 'Image has been updated.');
+
+        switch ($lang) 
+        {
+            case 'jp':
+                $msg = '画像が更新されました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Image has been updated.';
+        }
+        return redirect('/dashboard') -> with('success', $msg);
     }
 
 
@@ -111,6 +134,8 @@ class DashboardController extends Controller
      */
     public function updateSettings(Request $request)
     {
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+
         $this -> validate($request, [
             'name' => 'required | max: 32'
         ]);
@@ -122,7 +147,18 @@ class DashboardController extends Controller
         $user -> save();
 
         unset($user_id, $user);
-        return redirect() -> action('DashboardController@show') -> with('success', 'Your settings have been updated');
+
+        $msg = '';
+        switch ($lang) 
+        {
+            case 'jp':
+                $msg = '設定が更新されました';
+                break;
+            case 'en':
+            default:
+                $msg = 'Your settings have been updated.';
+        }
+        return redirect() -> action('DashboardController@show') -> with('success', $msg);
     }
 
 
@@ -134,6 +170,8 @@ class DashboardController extends Controller
      */
     public function updatePassword(Request $request)
     {
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+
         $this -> validate($request, [
             'old_pwd' => 'required',
             'New_Password' => 'required | min: 6',
@@ -143,28 +181,47 @@ class DashboardController extends Controller
 
         $user_id = auth() -> user() -> id;
         $user = User::findOrFail($user_id);
-        $error_msg = 'Incorrect password or new passwords do not match';
+        $msg = '';
+        switch ($lang) 
+        {
+            case 'jp':
+                $msg = '間違ったパスワードまたは新しいパスワードが一致しません';
+                break;
+            case 'en':
+            default:
+                $msg = 'Incorrect password or new passwords do not match.';
+        }
 
         // 1. "Current Password" must be the same
         if (!Hash::check($request -> input('old_pwd'), $user -> password))
         {
-            unset($user_id, $user, $error_msg);
-            return redirect() -> action('DashboardController@settings') -> with('error', $error_msg);
+            unset($user_id, $user);
+            return redirect() -> action('DashboardController@settings') -> with('error', $msg);
         }
 
         // 2. "New Passwords" must be the same
         if (strcmp($request -> input('New_Password'), $request -> input('new_pwd_2')) !== 0)
         {
-            unset($user_id, $user, $error_msg);
-            return redirect() -> action('DashboardController@settings') -> with('error', $error_msg);
+            unset($user_id, $user);
+            return redirect() -> action('DashboardController@settings') -> with('error', $msg);
         }
 
         // 3. Validation passed - hash the new password and store in the db
         $user -> password = Hash::make($request -> input('new_pwd_2'));
         $user -> save();
 
-        unset($user_id, $user, $error_msg);
-        return redirect() -> action('DashboardController@show') -> with('success', 'Password has been updated.');
+        unset($user_id, $user);
+
+        switch ($lang) 
+        {
+            case 'jp':
+                $msg = 'パスワードが更新されました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Password has been updated.';
+        }
+        return redirect() -> action('DashboardController@show') -> with('success', $msg);
     }
 
 
@@ -175,15 +232,27 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function deleteUser()
+    public function deleteUser(Request $request)
     {
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+
         $user_id = auth() -> user() -> id;
         $user = User::findOrFail($user_id);
 
         // 0. Admins and moderators are not allowed to delete their profile
         if (strtolower($user -> user_role) != 'basic')
         {
-            return redirect() -> action('DashboardController@show') -> with('error', 'Not allowed.');
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = '禁じられている。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Not allowed.';
+            }
+            return redirect() -> action('DashboardController@show') -> with('error', $msg);
         }
 
         // 1. Delete foreign keys
@@ -205,6 +274,15 @@ class DashboardController extends Controller
         $user -> delete();
         unset($user, $user_id);
 
-        return redirect('/') -> with('success', 'Your profile has been deleted.');
+        switch ($lang) 
+        {
+            case 'jp':
+                $msg = 'あなたのプロフィールは削除されました。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Your profile has been deleted.';
+        }
+        return redirect('/') -> with('success', '');
     }
 }

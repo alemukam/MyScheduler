@@ -67,13 +67,13 @@
                                 @csrf
                             </form>
                         </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                        {!! Form::open(['id' => 'lang_form', 'action' => 'LocaleController@setLang', 'method' => 'POST']) !!}
-                            {{ Form::select('lang', ['jp' => '日本語', 'en' => 'English'], app()->getLocale(), ['id' => 'lang_dropdown', 'class' => 'custom-select']) }}
-                        {!! Form::close() !!}
                     </li> 
                 @endguest
+                <li class="nav-item dropdown">
+                    {!! Form::open(['id' => 'lang_form', 'action' => 'LocaleController@setLang', 'method' => 'POST']) !!}
+                        {{ Form::select('lang', ['jp' => '日本語', 'en' => 'English'], app()->getLocale(), ['id' => 'lang_dropdown', 'class' => 'custom-select']) }}
+                    {!! Form::close() !!}
+                </li>
             </ul>
         </div>
     </div>

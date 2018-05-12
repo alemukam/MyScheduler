@@ -10,8 +10,21 @@ function getEvents(day, month, year) {
             'year': year
         },
         success: function(data) {
+            // language setups
+            var header = '', noEvents = '';
+            switch (document.documentElement.lang) {
+                case 'jp':
+                    header = 'イベントの';
+                    noEvents = 'この日はイベントはありません。 自由時間を楽しむ';
+                    break;
+                case 'en':
+                default:
+                    header = 'Events on ';
+                    noEvents = 'There are no events on this day. Enjoy free time';
+            }
+
             // display the date of the events
-            $('#events_title').text('Events on 年' + year + '月' + month + '日' + day);
+            $('#events_title').text(header + '年' + year + '月' + month + '日' + day);
 
             // display the events on the date
             
@@ -19,7 +32,7 @@ function getEvents(day, month, year) {
             {
                 $('#group_events').hide();
                 $('#events_table').removeClass('table-bordered');
-                $('#render_events').html('<p>There are no events on this day. Enjoy free time :)</p>');
+                $('#render_events').html('<p>'+ noEvents +' :)</p>');
             } else {
                 $('#group_events').show();
                 $('#events_table').addClass('table-bordered');

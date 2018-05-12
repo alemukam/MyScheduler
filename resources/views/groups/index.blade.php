@@ -1,4 +1,8 @@
 @extends('layouts.app')
+{{-- Update locale if necessary --}}
+@php
+    if (Session::has('lang')) app() -> setLocale(Session::get('lang'));
+@endphp
 
 @section('css-files')
     <link href="{{ asset('css/custom/groups.index.css') }}" rel="stylesheet">
@@ -8,9 +12,9 @@
 @endsection
 
 @section('content')
-    <a href="{{ url('groups/create') }}"><button id="create_new" type="button" class="btn btn-primary btn-lg btn-block">Create new group</button></a>
+    <a href="{{ url('groups/create') }}"><button id="create_new" type="button" class="btn btn-primary btn-lg btn-block">{{ __('groups/index.create') }}</button></a>
     @if(sizeof($groups) < 1)
-        <h3>There are no groups</h3>
+        <h3>{{ __('groups/index.no_groups') }}</h3>
     @else
         @foreach($groups as $item)
             <div class="row">
@@ -24,7 +28,7 @@
                     @else
                         <p>{{ substr($item -> description, 0, $length) . ' . . .' }}</p>
                     @endif
-                    <small>Group Moderator: {{ $item -> user['name'] }}</small>
+                    <small>{{ __('groups/index.mod') }}: {{ $item -> user['name'] }}</small>
                 </div>
             </div>
             @if(!$loop -> last)

@@ -12,27 +12,22 @@ use Illuminate\Http\Request;
 class NavigationController extends Controller
 {
     /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth', ['except' => ['homepage', 'about', 'contact', 'post_contact']]);
-    }
-
-
-
-    /**
      * Show the home page 1) authenticated users - calendar; 2) guests - facts about the app.
      *
      * @return \Illuminate\Http\Response
      */
-    public function homepage()
+    public function homepage(Request $request)
     {
         if (!Auth::check()) return view('pages.start_guest');
         else
         {
+            // check block
+            if (auth() -> user() -> status != 'a')
+            {
+                $request -> session() -> flush();
+                return redirect() -> action('NavigationController@homepage');
+            }
+
             // current month should be displayed by default
             $current_day = getdate();
             $current_year = $current_day['year'];
@@ -106,6 +101,18 @@ class NavigationController extends Controller
         $notif -> type = 0;
         $notif -> save();
 
-        return redirect() -> action('NavigationController@contact') -> with('success', 'Thank you. Message has been sent. We will reply shortly');
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
+        $msg = '';
+
+        switch ($lang)
+        {
+            case 'jp':
+                $msg = 'ありがとうございました。 メッセージが送信されました。 私たちはまもなく返信します。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Thank you. Message has been sent. We will reply shortly.';
+        }
+        return redirect() -> action('NavigationController@contact') -> with('success', $msg);
     }
 }

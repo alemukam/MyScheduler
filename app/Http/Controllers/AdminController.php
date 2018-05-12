@@ -15,7 +15,8 @@ class AdminController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this -> middleware('auth');
+        $this -> middleware('check_block');
     }
 
 
@@ -60,22 +61,42 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function block($id)
+    public function block($id, Request $request)
     {
         if (auth() -> user() -> user_role != 'admin') return redirect() -> action('DashboardController@show');
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
 
         $user = User::findOrFail($id);
 
+        $msg = '';
         // not possible to block the admin
         if (strtolower($user -> user_role) == 'admin')
         {
-            return redirect() -> action('DashboardController@show') -> with('error', 'Not Allowed');
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = '禁じられている';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Not Allowed';
+            }
+            return redirect() -> action('DashboardController@show') -> with('error', $msg);
         }
 
         $user -> status = 'b'; // b - blocked
         $user -> save();
 
-        return redirect() -> action('AdminController@findUsers') -> with('success', 'User ' . $user -> name . ' has been blocked.');
+        switch ($lang) 
+        {
+            case 'jp':
+                $msg = 'ユーザー' . $user -> name . 'がブロックされました';
+                break;
+            case 'en':
+            default:
+                $msg = 'User ' . $user -> name . ' has been blocked.';
+        }
+        return redirect() -> action('AdminController@findUsers') -> with('success', $msg);
     }
 
 
@@ -85,22 +106,42 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function unblock($id)
+    public function unblock($id, Request $request)
     {
         if (auth() -> user() -> user_role != 'admin') return redirect() -> action('DashboardController@show');
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
 
         $user = User::findOrFail($id);
 
+        $msg = '';
         // not possible to block the admin
         if (strtolower($user -> user_role) == 'admin')
         {
-            return redirect() -> action('DashboardController@show') -> with('error', 'Not Allowed');
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = '禁じられている';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Not Allowed';
+            }
+            return redirect() -> action('DashboardController@show') -> with('error', $msg);
         }
 
         $user -> status = 'a'; // a - active
         $user -> save();
 
-        return redirect() -> action('AdminController@findUsers') -> with('success', 'User ' . $user -> name . ' has been unblocked.');
+        switch ($lang) 
+        {
+            case 'jp':
+                $msg = 'ユーザー' . $user -> name . 'がブロック解除されました';
+                break;
+            case 'en':
+            default:
+                $msg = 'User ' . $user -> name . ' has been unblocked.';
+        }
+        return redirect() -> action('AdminController@findUsers') -> with('success', $msg);
     }
 
 
@@ -111,9 +152,10 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function resolveMessage($id)
+    public function resolveMessage($id, Request $request)
     {
         if (auth() -> user() -> user_role != 'admin') return redirect() -> action('DashboardController@show');
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
 
         $msg = AdminNotification::findOrFail($id);
         $msg -> status = 'r'; // r - resolved
@@ -123,7 +165,18 @@ class AdminController extends Controller
         if ($msg -> type == 0)
         {
             unset($msg);
-            return redirect() -> action('DashboardController@show') -> with('success', 'Incident resolved');
+            $msg = '';
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = 'インシデント解決済み';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Incident resolved';
+            }
+
+            return redirect() -> action('DashboardController@show') -> with('success', $msg);
         }
 
         
@@ -132,7 +185,17 @@ class AdminController extends Controller
         $group -> save();
         unset($group, $msg);
 
-        return redirect() -> action('DashboardController@show') -> with('success', 'Group has been approved');
+        $msg = '';
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = 'グループが承認されました';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Group has been approved';
+            }
+        return redirect() -> action('DashboardController@show') -> with('success', $msg);
     }
 
 
@@ -145,6 +208,7 @@ class AdminController extends Controller
     public function deleteMessage($id, Request $request)
     {
         if (auth() -> user() -> user_role != 'admin') return redirect() -> action('DashboardController@show');
+        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
 
         $msg = AdminNotification::findOrFail($id);
         $msg -> status = 'd'; // d - deleted
@@ -154,7 +218,17 @@ class AdminController extends Controller
         if ($msg -> type == 0)
         {
             unset($msg);
-            return redirect() -> action('DashboardController@show') -> with('success', 'Incident discarded');
+            $msg = '';
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = 'インシデントが破棄された';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Incident discarded';
+            }
+            return redirect() -> action('DashboardController@show') -> with('success', $msg);
         }
 
 
@@ -170,6 +244,16 @@ class AdminController extends Controller
         $group -> save();
         unset($group, $msg);
 
-        return redirect() -> action('DashboardController@show') -> with('success', 'Group has been rejected. Notification is sent to the moderator.');
+        $msg = '';
+        switch ($lang) 
+        {
+            case 'jp':
+                $msg = 'グループは拒否されました。 通知は司会者に送信されます。';
+                break;
+            case 'en':
+            default:
+                $msg = 'Group has been rejected. Notification is sent to the moderator.';
+        }
+        return redirect() -> action('DashboardController@show') -> with('success', $msg);
     }
 }
