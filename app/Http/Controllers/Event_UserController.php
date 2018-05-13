@@ -53,17 +53,15 @@ class Event_UserController extends Controller
         $this -> validate($request, [
             'title' => 'required | max: 35',
             'date' => 'required | date | after_or_equal: today',
-            'start_time' => 'required',
-            'end_time' => 'required',
+            'start_time' => 'required | regex: /^[0-9:]+$/',
+            'end_time' => 'required | regex: /^[0-9:]+$/',
             'description' => 'required'
         ]);
 
         // dates with the correct formats
-        $start_time =  date_format(date_create($request -> input('start_time')), 'H:i:s');
-        $end_time =  date_format(date_create($request -> input('end_time')), 'H:i:s');
-        $date = date_format(date_create($request -> input('date')), 'Y-m-d');
-
-
+        $start_time = date_create($request -> input('start_time'));
+        $end_time = date_create($request -> input('end_time'));
+        $date = date_create($request -> input('date'));
         // 1. incorrect input format
         if ($start_time === false || $end_time === false || $date === false)
         {
@@ -78,7 +76,13 @@ class Event_UserController extends Controller
             }
             return view('users.events.create') -> with('validation_failed', $msg);
         }
-        // 2. not allowed to create new events in the past
+
+
+        $start_time =  date_format($start_time, 'H:i:s');
+        $end_time =  date_format($end_time, 'H:i:s');
+        $date = date_format($date, 'Y-m-d');
+
+        // not allowed to create new events in the past
         if ($date == date('Y-m-d') && $start_time < date("H:i:s"))
         {
             switch ($lang)
@@ -92,7 +96,7 @@ class Event_UserController extends Controller
             }
             return view('users.events.create') -> with('validation_failed', $msg);
         }
-        // 3. incorrect sequence
+        // incorrect sequence
         elseif ($start_time >= $end_time)
         {
             switch ($lang) 
@@ -185,17 +189,15 @@ class Event_UserController extends Controller
         $this -> validate($request, [
             'title' => 'required | max: 35',
             'date' => 'required | date | after_or_equal: today',
-            'start_time' => 'required',
-            'end_time' => 'required',
+            'start_time' => 'required | regex: /^[0-9:]+$/',
+            'end_time' => 'required | regex: /^[0-9:]+$/',
             'description' => 'required'
         ]);
 
         // dates with the correct formats
-        $start_time =  date_format(date_create($request -> input('start_time')), 'H:i:s');
-        $end_time =  date_format(date_create($request -> input('end_time')), 'H:i:s');
-        $date = date_format(date_create($request -> input('date')), 'Y-m-d');
-
-
+        $start_time = date_create($request -> input('start_time'));
+        $end_time = date_create($request -> input('end_time'));
+        $date = date_create($request -> input('date'));
         // 1. incorrect input format
         if ($start_time === false || $end_time === false || $date === false)
         {
@@ -210,7 +212,14 @@ class Event_UserController extends Controller
             }
             return view('users.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
         }
-        // 2. not allowed to create new events in the past
+
+        $start_time =  date_format($start_time, 'H:i:s');
+        $end_time =  date_format($end_time, 'H:i:s');
+        $date = date_format($date, 'Y-m-d');
+
+
+        
+        // not allowed to create new events in the past
         if ($date == date('Y-m-d') && $start_time < date("H:i:s"))
         {
             switch ($lang) 
@@ -224,7 +233,7 @@ class Event_UserController extends Controller
             }
             return view('users.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
         }
-        // 3. incorrect sequence
+        // incorrect sequence
         elseif ($start_time >= $end_time)
         {
             switch ($lang) 

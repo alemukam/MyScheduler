@@ -61,19 +61,17 @@ class Event_GroupController extends Controller
         $this -> validate($request, [
             'title' => 'required | max: 35',
             'date' => 'required | date | after_or_equal: today',
-            'start_time' => 'required',
-            'end_time' => 'required',
+            'start_time' => 'required | regex: /^[0-9:]+$/',
+            'end_time' => 'required | regex: /^[0-9:]+$/',
             'description' => 'required'
         ]);
 
-        $start_time =  date_format(date_create($request -> input('start_time')), 'H:i:s');
-        $end_time =  date_format(date_create($request -> input('end_time')), 'H:i:s');
-        $date = date_format(date_create($request -> input('date')), 'Y-m-d');
+        // time validation
+        $start_time = date_create($request -> input('start_time'));
+        $end_time = date_create($request -> input('end_time'));
+        $date = date_create($request -> input('date'));
         $data = array('id' => $group_id, 'name' => $group -> name);
 
-        // timestamp validation
-        unset($user_id, $group);
-        // 1. incorrect input format
         if ($start_time === false || $end_time === false || $date === false)
         {
             switch ($lang) 
@@ -87,7 +85,15 @@ class Event_GroupController extends Controller
             }
             return view('groups.events.create') -> with('data', $data) -> with('validation_failed', $msg);
         }
-        // 2. not allowed to create new events in the past
+
+
+        $start_time =  date_format($start_time, 'H:i:s');
+        $end_time =  date_format($end_time, 'H:i:s');
+        $date = date_format($date, 'Y-m-d');
+
+        // timestamp validation
+        unset($user_id, $group);
+        // not allowed to create new events in the past
         if ($date == date('Y-m-d') && $start_time < date("H:i:s"))
         {
             switch ($lang) 
@@ -101,7 +107,7 @@ class Event_GroupController extends Controller
             }
             return view('groups.events.create') -> with('data', $data) -> with('validation_failed', $msg);
         }
-        // 3. incorrect sequence
+        // incorrect sequence
         elseif ($start_time >= $end_time)
         {
             switch ($lang) 
@@ -214,19 +220,38 @@ class Event_GroupController extends Controller
         $this -> validate($request, [
             'title' => 'required | max: 35',
             'date' => 'required | date',
-            'start_time' => 'required',
-            'end_time' => 'required',
+            'start_time' => 'required | regex: /^[0-9:]+$/',
+            'end_time' => 'required | regex: /^[0-9:]+$/',
             'description' => 'required'
         ]);
 
-        $start_time =  date_format(date_create($request -> input('start_time')), 'H:i:s');
-        $end_time =  date_format(date_create($request -> input('end_time')), 'H:i:s');
-        $date = date_format(date_create($request -> input('date')), 'Y-m-d');
+        $start_time = date_create($request -> input('start_time'));
+        $end_time = date_create($request -> input('end_time'));
+        $date = date_create($request -> input('date'));
         $data = array('id' => $group_id, 'name' => $group -> name);
+        if ($start_time === false || $end_time === false || $date === false)
+        {
+            switch ($lang) 
+            {
+                case 'jp':
+                    $msg = '時刻形式が正しくありません。';
+                    break;
+                case 'en':
+                default:
+                    $msg = 'Incorrect time format.';
+            }
+            return view('groups.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
+        }
+
+
+        $start_time =  date_format($start_time, 'H:i:s');
+        $end_time =  date_format($end_time, 'H:i:s');
+        $date = date_format($data, 'Y-m-d');
+        
 
         // timestamp validation
         unset($user_id, $group);
-        // 1. not allowed to create new events in the past
+        // not allowed to create new events in the past
         if ($date < date("Y-m-d") || $start_time < date("H:i:s"))
         {
             switch ($lang) 
@@ -240,21 +265,7 @@ class Event_GroupController extends Controller
             }
             return view('groups.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
         }
-        // 3. correct input format
-        if ($start_time === false || $end_time === false)
-        {
-            switch ($lang) 
-            {
-                case 'jp':
-                    $msg = '時刻形式が正しくありません。';
-                    break;
-                case 'en':
-                default:
-                    $msg = 'Incorrect time format.';
-            }
-            return view('groups.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
-        }
-        // 4. correct sequence
+        // correct sequence
         elseif ($start_time >= $end_time)
         {
             switch ($lang) 

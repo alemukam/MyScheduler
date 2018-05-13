@@ -104,7 +104,7 @@
                                     {!! Form::open(['action' => ['AdminController@deleteMessage', $new -> id], 'method' => 'POST']) !!}
                                         <div class="modal-body">
                                             <div class="form-group">
-                                                {!! Form::textarea('reason', '', ['type' => 'text', 'placeholder' => __('pages/dashboard.reason_ph'), 'class' => 'form-control', 'required']) !!}
+                                                {!! Form::textarea('reason', '', ['placeholder' => __('pages/dashboard.reason_ph'), 'class' => 'form-control', 'required']) !!}
                                             </div>
                                         </div>
                                         <div class="modal-footer">

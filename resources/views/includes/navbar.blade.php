@@ -13,12 +13,16 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <!-- Left Side Of Navbar -->
             <ul class="navbar-nav mr-auto">
-                <li><a href="{{ url('about') }}" class="nav-link{{ ($uri == 'about' ? ' active' : '') }}">
-                    @lang('navbar.about')
-                </a></li>
-                <li><a href="{{ url('contact') }}" class="nav-link{{ ($uri == 'contact' ? ' active' : '') }}">
+                <li>
+                    <a href="{{ url('about') }}" class="nav-link{{ ($uri == 'about' ? ' active' : '') }}">
+                        @lang('navbar.about')
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url('contact') }}" class="nav-link{{ ($uri == 'contact' ? ' active' : '') }}">
                     @lang('navbar.contact_us')
-                </a></li>
+                    </a>
+                </li>
             </ul>
 
             <!-- Right Side Of Navbar -->
@@ -34,12 +38,14 @@
                         </a>
                     </li>
                     @if(strtolower(Auth::user() -> user_role) == 'admin')
-                        <a class="nav-link{{ ($uri == 'finduser' ? ' active' : '') }}" href="{{ url('find-users') }}">
-                            @lang('navbar.find_users')
-                        </a>
+                        <li>
+                            <a class="nav-link{{ ($uri == 'finduser' ? ' active' : '') }}" href="{{ url('find-users') }}">
+                                @lang('navbar.find_users')
+                            </a>
+                        </li>
                     @endif
                     <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {{ Auth::user() -> name }} 
                             @if(strtolower(Auth::user() -> user_role) == 'admin')
                                 <span> [{{ __('navbar.admin') }}]</span>

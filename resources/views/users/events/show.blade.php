@@ -13,8 +13,8 @@
 @section('content')
     {{-- Delete and Edit buttons -> only for moderator --}}
     @if(Auth::user() -> id ==  $event -> user_id)
-        <a href="{{ url('user-events/'. $event['id'] . '/edit') }}">
-            <button type="button" class="btn btn-outline-primary">{{ __('events/show.btn_edit') }}</button>
+        <a class="btn btn-outline-primary" href="{{ url('user-events/'. $event['id'] . '/edit') }}">
+            {{ __('events/show.btn_edit') }}
         </a>
         <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#delete_modal">
             {{ __('events/show.btn_delete') }}

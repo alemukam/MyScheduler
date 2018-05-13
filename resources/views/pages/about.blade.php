@@ -14,7 +14,7 @@
 @section('content')
     <h1>{{ __('pages/about.header') }}</h1>
     <div class="row">
-        <div class="img_hide col-12 col-md-4 col-lg-3">
+        <div class="col-12 col-md-4 col-lg-3 img_hide">
             <img src="{{ asset('storage/app_images/LatvijaFF_noBG.png') }}" alt="latvijaff">
             <div class="img_sub">
                 <p><small>{{ __('pages/about.img_footer-1') }}<br>{{ __('pages/about.img_footer-2') }}</small></p>
@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="img_hide" class="col-12 col-md-4 col-lg-3">
+        <div class="img_hide col-12 col-md-4 col-lg-3">
             <img src="{{ asset('storage/app_images/services.png') }}" alt="our_services">
         </div>
         <div class="col-sm-12 col-md-8 col-lg-9">
@@ -50,27 +50,27 @@
             <div class="row">
                 <div class="col-12 col-sm-4">
                     <div class="list-group" id="list-tab" role="tablist">
-                        <a class="list-group-item list-group-item-action active" id="list-dev-list" data-toggle="list" href="#list-dev" role="tab" aria-controls="dev">{{ __('pages/about.s1') }}</a>
-                        <a class="list-group-item list-group-item-action" id="list-maintenance-list" data-toggle="list" href="#list-maintenance" role="tab" aria-controls="maintenance">{{ __('pages/about.s2') }}</a>
-                        <a class="list-group-item list-group-item-action" id="list-hosting-list" data-toggle="list" href="#list-hosting" role="tab" aria-controls="hosting">{{ __('pages/about.s3') }}</a>
-                        <a class="list-group-item list-group-item-action" id="list-ff-list" data-toggle="list" href="#list-ff" role="tab" aria-controls="ff">{{ __('pages/about.s4') }}</a>
+                        <a class="list-group-item list-group-item-action active" id="list-dev-list" data-toggle="list" href="#list-dev" role="tab">{{ __('pages/about.s1') }}</a>
+                        <a class="list-group-item list-group-item-action" id="list-maintenance-list" data-toggle="list" href="#list-maintenance" role="tab">{{ __('pages/about.s2') }}</a>
+                        <a class="list-group-item list-group-item-action" id="list-hosting-list" data-toggle="list" href="#list-hosting" role="tab">{{ __('pages/about.s3') }}</a>
+                        <a class="list-group-item list-group-item-action" id="list-ff-list" data-toggle="list" href="#list-ff" role="tab">{{ __('pages/about.s4') }}</a>
                     </div>
                 </div>
                 <div class="col-12 col-sm-8">
                     <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="list-dev" role="tabpanel" aria-labelledby="list-dev-list">
+                        <div class="tab-pane fade show active" id="list-dev" role="tabpanel">
                             <h5>{{ __('pages/about.s1') }}</h5>
                             <p>{{ __('pages/about.des1') }}</p>
                         </div>
-                        <div class="tab-pane fade" id="list-maintenance" role="tabpanel" aria-labelledby="list-maintenance-list">
+                        <div class="tab-pane fade" id="list-maintenance" role="tabpanel">
                             <h5>{{ __('pages/about.s2') }}</h5>
                             <p>{{ __('pages/about.des2') }}</p>
                         </div>
-                        <div class="tab-pane fade" id="list-hosting" role="tabpanel" aria-labelledby="list-hosting-list">
+                        <div class="tab-pane fade" id="list-hosting" role="tabpanel">
                             <h5>{{ __('pages/about.s3') }}</h5>
                             <p>{{ __('pages/about.des3') }}</p>
                         </div>
-                        <div class="tab-pane fade" id="list-ff" role="tabpanel" aria-labelledby="list-ff-list">
+                        <div class="tab-pane fade" id="list-ff" role="tabpanel">
                             <h5>{{ __('pages/about.s4') }}</h5>
                             <p>{{ __('pages/about.des4') }}</p>
                         </div>

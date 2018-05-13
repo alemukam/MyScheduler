@@ -36,8 +36,8 @@
 @section('content')
     @if(Auth::user() -> id ==  $group -> moderator_id)
         {{-- Control buttons of the group = Edit and delete --}}
-        <a href="{{ url('groups/' . $group -> id . '/edit') }}">
-            <button type="button" class="btn btn-outline-primary">{{ __('groups/show.edit') }}</button>
+        <a class="btn btn-outline-primary" href="{{ url('groups/' . $group -> id . '/edit') }}">
+            {{ __('groups/show.edit') }}
         </a>
         <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#delete_modal">
             {{ __('groups/show.delete') }}
@@ -76,14 +76,14 @@
                 <thead>
                     <tr>
                         <th>{{ __('general.name') }}</th>
-                        <th colspan="3" class="actions">{{ __('general.actions') }}</th>
+                        <th class="actions">{{ __('general.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($data['new_requests'] as $request)
                         <tr class="container">
                             <td>{{ $request['name'] }}</td>
-                            <td class="row" colspan="3" style="border-top: 0px">
+                            <td class="row" style="border-top: 0px">
                                 {{-- Approve of the membership --}}
                                 {!! Form::open(['action' => ['GroupController@approveOfRequest', $request['pivot']['id'], $request['pivot']['group_id']], 'method' => 'POST', 'class' => 'col-12 col-sm-4']) !!}
                                     {!! Form::hidden('_method', 'PUT') !!}

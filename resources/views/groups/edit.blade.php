@@ -23,7 +23,7 @@
         {{-- Form Label for the description --}}
         <div class="form-group">
             {{ Form::label('description', __('general.description')) }}
-            {{ Form::textarea('description', $group -> description, ['type' => 'text', 'placeholder' => __('groups/edit.description_ph'), 'class' => 'form-control']) }}
+            {{ Form::textarea('description', $group -> description, ['placeholder' => __('groups/edit.description_ph'), 'class' => 'form-control']) }}
         </div>
         {{-- Form Label for the image of the group --}}
         <div class="form-group">

@@ -62,7 +62,7 @@
         {{-- Form Label for the message --}}
         <div class="form-group">
             {{ Form::label('message', __('pages/contact.lbl4')) }}
-            {{ Form::textarea('message', '', ['type' => 'text', 'placeholder' => __('pages/contact.tb4'), 'class' => 'form-control' . ($errors->has('message') ? ' is-invalid' : '')]) }}
+            {{ Form::textarea('message', '', ['placeholder' => __('pages/contact.tb4'), 'class' => 'form-control' . ($errors->has('message') ? ' is-invalid' : '')]) }}
         </div>
         {{ Form::submit(__('pages/contact.submit'), ['class' => 'btn btn-primary']) }}
     {!! Form::close() !!}

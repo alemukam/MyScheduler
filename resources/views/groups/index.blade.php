@@ -12,7 +12,9 @@
 @endsection
 
 @section('content')
-    <a href="{{ url('groups/create') }}"><button id="create_new" type="button" class="btn btn-primary btn-lg btn-block">{{ __('groups/index.create') }}</button></a>
+    <a id="create_new" class="btn btn-primary btn-lg btn-block" href="{{ url('groups/create') }}">
+        {{ __('groups/index.create') }}
+    </a>
     @if(sizeof($groups) < 1)
         <h3>{{ __('groups/index.no_groups') }}</h3>
     @else
