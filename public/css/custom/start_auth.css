@@ -14,3 +14,34 @@
 .u_events {
     margin-top: 20px;
 }
+
+@media screen and (min-width: 450px), screen and (device-min-width: 450px) {
+    
+}
+
+@media screen and (min-width: 375px) and (max-width: 449px), screen and (device-min-width: 375px) and (device-max-width: 449px) {
+    
+}
+
+@media screen and (max-width: 374px), screen and (device-max-width: 374px) {
+    #u_events_table {
+        margin-top: 40px;
+    }
+
+    #btn_newEvent {
+        top: 30px;
+    }
+
+    #u_events_render tr td:nth-child(3), #u_events tr th:nth-child(3) {
+        display: none;
+    }
+
+    #g_events_table tr td:nth-child(3), #g_events_table tr td:nth-child(4),
+    #g_events tr th:nth-child(3), #g_events tr th:nth-child(4) {
+        display: none;
+    }
+
+    #u_events tr th:nth-child(1), #g_events tr th:nth-child(1) {
+        width: 50%;
+    }
+}

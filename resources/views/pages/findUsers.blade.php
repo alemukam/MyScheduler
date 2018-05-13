@@ -39,7 +39,7 @@
                     <tbody>
                         @foreach($user_find_result as $user)
                             <tr>
-                                <td>{{ $user -> name }}</td>
+                                <td class="fst">{{ $user -> name }}</td>
                                 <td>{{ $user -> email }}</td>
                                 <td>
                                     @if($user -> status == 'a')

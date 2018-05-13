@@ -14,7 +14,7 @@ img {
     margin: 5px 0;
 }
 
-@media screen and (max-width: 575px), screen and (device-max-width: 575pxpx) {
+@media screen and (max-width: 575px), screen and (device-max-width: 575px) {
     img {
         width: 200px;
         display: block;

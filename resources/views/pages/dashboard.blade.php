@@ -65,13 +65,13 @@
                 <div class="row">
                     {{-- Type is 0 => regular message --}}
                     @if($new -> type == 0)
-                        <div class="col-3">
+                        <div class="col-12 col-sm-3">
                             {!! Form::open(['action' => ['AdminController@resolveMessage', $new -> id], 'method' => 'POST']) !!}
                                 {{ Form::hidden('_method', 'PUT') }}
                                 {{ Form::submit( __('pages/dashboard.btn_resolve'), ['class' => 'col-12 btn btn-outline-success']) }}
                             {!! Form::close() !!}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-sm-3">
                             {!! Form::open(['action' => ['AdminController@deleteMessage', $new -> id], 'method' => 'POST']) !!}
                                 {{ Form::hidden('_method', 'PUT') }}
                                 {{ Form::submit( __('pages/dashboard.btn_discard'), ['class' => 'col-12 btn btn-outline-danger']) }}

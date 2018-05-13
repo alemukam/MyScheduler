@@ -11,7 +11,17 @@ table {
 }
 
 
-@media screen and (max-width: 428px), screen and (device-max-width: 428px) {
+@media screen and (min-width: 331px) and (max-width: 428px), screen and (device-min-width: 331px) and (device-max-width: 428px) {
+    .table {
+        font-size: 10px;
+    }
+
+    .table input {
+        font-size: 8px;
+    }
+}
+
+@media screen and (max-width: 330px), screen and (device-max-width: 330px) {
     .table {
         font-size: 10px;
     }

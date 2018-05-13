@@ -37,7 +37,6 @@
 /* 2.1. General for all days */
 .day {
     text-align: right;
-    font-size: 30px;
     font-weight: lighter;
     line-height: 25px;
 }
@@ -71,4 +70,35 @@
 
 .btn-inactive:hover {
     cursor: not-allowed !important; 
+}
+
+
+@media screen and (min-width: 450px), screen and (device-min-width: 450px) {
+    .day {
+        font-size: 30px;
+    }
+}
+
+@media screen and (min-width: 375px) and (max-width: 449px), screen and (device-min-width: 375px) and (device-max-width: 449px) {
+    .day {
+        font-size: 20px;
+    }
+}
+
+@media screen and (max-width: 374px), screen and (device-max-width: 374px) {
+    #today {
+        font-size: 20px;
+    }
+    
+    .month_display {
+        font-size: 15px;
+    }
+    
+    .day {
+        font-size: 12px;
+    }
+
+    .header, #btn_month_back, #btn_month_next {
+        font-size: 10px;
+    }
 }
