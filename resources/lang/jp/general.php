@@ -1,6 +1,7 @@
 <?php
 
     return [
+        'user' => 'ユーザー',
         'name' => '名前',
         'email' => '電子メイル',
         'actions' => '行動',

@@ -1,7 +1,5 @@
 @extends('layouts.app')
-{{-- Update locale if necessary --}}
 @php
-    if (Session::has('lang')) app() -> setLocale(Session::get('lang'));
     // End time - by default now + 30 min
     $end_time = date_create(date('H:i'));
     date_add($end_time, new DateInterval('PT30M'));

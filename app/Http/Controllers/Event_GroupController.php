@@ -48,9 +48,6 @@ class Event_GroupController extends Controller
      */
     public function store($group_id, Request $request)
     {
-        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
-        $msg = '';
-
         $user_id = auth() -> user() -> id;
         $group = Group::findOrFail($group_id);
 
@@ -74,16 +71,7 @@ class Event_GroupController extends Controller
 
         if ($start_time === false || $end_time === false || $date === false)
         {
-            switch ($lang) 
-            {
-                case 'jp':
-                    $msg = '時刻形式が正しくありません。';
-                    break;
-                case 'en':
-                default:
-                    $msg = 'Incorrect time format.';
-            }
-            return view('groups.events.create') -> with('data', $data) -> with('validation_failed', $msg);
+            return view('groups.events.create') -> with('data', $data) -> with('validation_failed', __('messages.event_format_error'));
         }
 
 
@@ -96,30 +84,12 @@ class Event_GroupController extends Controller
         // not allowed to create new events in the past
         if ($date == date('Y-m-d') && $start_time < date("H:i:s"))
         {
-            switch ($lang) 
-            {
-                case 'jp':
-                    $msg = '過去のイベントは許可されていません。';
-                    break;
-                case 'en':
-                default:
-                    $msg = 'Events in the past are not allowed.';
-            }
-            return view('groups.events.create') -> with('data', $data) -> with('validation_failed', $msg);
+            return view('groups.events.create') -> with('data', $data) -> with('validation_failed', __('messages.event_past'));
         }
         // incorrect sequence
         elseif ($start_time >= $end_time)
         {
-            switch ($lang) 
-            {
-                case 'jp':
-                    $msg = '開始時刻は終了時刻の前にすることはできません。';
-                    break;
-                case 'en':
-                default:
-                    $msg = 'Start time cannot be before end time.';
-            }
-            return view('groups.events.create') -> with('data', $data) -> with('validation_failed', $msg);
+            return view('groups.events.create') -> with('data', $data) -> with('validation_failed', __('messages.event_start_time_error'));
         }
 
         // validation - OK, insert data into the DB
@@ -132,16 +102,7 @@ class Event_GroupController extends Controller
         $event -> description = $request -> input('description');
         $event -> save();
 
-        switch ($lang) 
-        {
-            case 'jp':
-                $msg = '新しいイベントが作成されました。';
-                break;
-            case 'en':
-            default:
-                $msg = 'New event has been created.';
-        }
-        return redirect() -> action('GroupController@show', ['id' => $group_id]) -> with('success', $msg);
+        return redirect() -> action('GroupController@show', ['id' => $group_id]) -> with('success', __('messages.event_success'));
     }
 
     /**
@@ -206,9 +167,6 @@ class Event_GroupController extends Controller
      */
     public function update(Request $request, $group_id, $id)
     {
-        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
-        $msg = '';
-
         $user_id = auth() -> user() -> id;
         $group = Group::findOrFail($group_id);
         $event = GroupEvent::findOrFail($id);
@@ -231,16 +189,7 @@ class Event_GroupController extends Controller
         $data = array('id' => $group_id, 'name' => $group -> name);
         if ($start_time === false || $end_time === false || $date === false)
         {
-            switch ($lang) 
-            {
-                case 'jp':
-                    $msg = '時刻形式が正しくありません。';
-                    break;
-                case 'en':
-                default:
-                    $msg = 'Incorrect time format.';
-            }
-            return view('groups.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
+            return view('groups.events.edit') -> with('event', $event) -> with('validation_failed', __('messages.event_format_error'));
         }
 
 
@@ -254,30 +203,12 @@ class Event_GroupController extends Controller
         // not allowed to create new events in the past
         if ($date < date("Y-m-d") || $start_time < date("H:i:s"))
         {
-            switch ($lang) 
-            {
-                case 'jp':
-                    $msg = '過去のイベントは許可されていません。';
-                    break;
-                case 'en':
-                default:
-                    $msg = 'Events in the past are not allowed.';
-            }
-            return view('groups.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
+            return view('groups.events.edit') -> with('event', $event) -> with('validation_failed', __('messages.event_past'));
         }
         // correct sequence
         elseif ($start_time >= $end_time)
         {
-            switch ($lang) 
-            {
-                case 'jp':
-                    $msg = '開始時刻は終了時刻の前にすることはできません。';
-                    break;
-                case 'en':
-                default:
-                    $msg = 'Start time cannot be before end time.';
-            }
-            return view('groups.events.edit') -> with('event', $event) -> with('validation_failed', $msg);
+            return view('groups.events.edit') -> with('event', $event) -> with('validation_failed', __('messages.event_start_time_error'));
         }
 
 
@@ -290,16 +221,7 @@ class Event_GroupController extends Controller
         $event -> description = $request -> input('description');
         $event -> save();
 
-        switch ($lang) 
-        {
-            case 'jp':
-                $msg = 'イベント"'. $event -> title .'"が更新されました。';
-                break;
-            case 'en':
-            default:
-                $msg = 'Event "'. $event -> title .'" has been updated.';
-        }
-        return redirect() -> action('GroupController@show', ['id' => $group_id]) -> with('success', $msg);
+        return redirect() -> action('GroupController@show', ['id' => $group_id]) -> with('success', $event -> title . __('messages.event_update_success'));
     }
 
     /**
@@ -310,9 +232,6 @@ class Event_GroupController extends Controller
      */
     public function destroy($group_id, $id, Request $request)
     {
-        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
-        $msg = '';
-
         $user_id = auth() -> user() -> id;
         $group = Group::findOrFail($group_id);
         $event = GroupEvent::findOrFail($id);
@@ -325,16 +244,7 @@ class Event_GroupController extends Controller
         $event -> delete();
         unset($user_id, $group);
 
-        switch ($lang) 
-        {
-            case 'jp':
-                $msg = 'イベント"'. $event_name .'"が削除されました。';
-                break;
-            case 'en':
-            default:
-                $msg = 'Event "'. $event_name .'" has been deleted.';
-        }
-        return redirect() -> action('GroupController@show', ['id' => $group_id]) -> with('success', $msg);
+        return redirect() -> action('GroupController@show', ['id' => $group_id]) -> with('success', $event_name . __('messages.event_delete'));
     }
 
 

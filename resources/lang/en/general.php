@@ -1,6 +1,7 @@
 <?php
 
     return [
+        'user' => 'User ',
         'name' => 'Name',
         'email' => 'E-mail',
         'actions' => 'Actions',

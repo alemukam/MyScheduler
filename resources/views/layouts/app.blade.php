@@ -1,8 +1,3 @@
-{{-- Update locale if necessary --}}
-@php
-    if (Session::has('lang')) app() -> setLocale(Session::get('lang'));
-@endphp
-
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
 <head>

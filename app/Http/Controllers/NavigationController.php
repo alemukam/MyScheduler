@@ -101,18 +101,7 @@ class NavigationController extends Controller
         $notif -> type = 0;
         $notif -> save();
 
-        $lang = ($request -> session() -> has('lang') ? $request -> session() -> get('lang') : 'en');
-        $msg = '';
-
-        switch ($lang)
-        {
-            case 'jp':
-                $msg = 'ありがとうございました。 メッセージが送信されました。 私たちはまもなく返信します。';
-                break;
-            case 'en':
-            default:
-                $msg = 'Thank you. Message has been sent. We will reply shortly.';
-        }
-        return redirect() -> action('NavigationController@contact') -> with('success', $msg);
+        
+        return redirect() -> action('NavigationController@contact') -> with('success', __('messages.navigation_post_contact'));
     }
 }

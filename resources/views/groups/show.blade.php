@@ -1,8 +1,4 @@
 @extends('layouts.app')
-{{-- Update locale if necessary --}}
-@php
-    if (Session::has('lang')) app() -> setLocale(Session::get('lang'));
-@endphp
 
 @section('css-files')
     <link href="{{ asset('css/custom/groups.show.css') }}" rel="stylesheet">
@@ -135,7 +131,7 @@
                         </div>
                         <div class="modal-footer">
                             {!! Form::open(['action' => ['GroupController@leaveGroup', $group -> id], 'method' => 'POST']) !!}
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('general.cancel') }}</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('general.btn_cancel') }}</button>
                                 {!! Form::hidden('_method', 'DELETE') !!}
                                 {!! Form::submit( __('groups/show.leave'), ['class' => 'btn btn-danger']) !!}
                             {!! Form::close() !!}

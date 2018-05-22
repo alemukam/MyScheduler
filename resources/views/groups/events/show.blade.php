@@ -1,8 +1,4 @@
 @extends('layouts.app')
-@php
-    // language
-    if (Session::has('lang')) app() -> setLocale(Session::get('lang'));
-@endphp
 
 @section('css-files')
 @endsection

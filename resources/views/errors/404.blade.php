@@ -1,7 +1,4 @@
 @extends('layouts.errors')
-@php
-    if (Session::has('lang')) app() -> setLocale(Session::get('lang'));
-@endphp
 
 @section('content')
     <h1>The page you are looking for is not available.</h1>

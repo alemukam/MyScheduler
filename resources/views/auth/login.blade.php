@@ -1,8 +1,4 @@
 @extends('layouts.app')
-{{-- Update locale if necessary --}}
-@php
-    if (Session::has('lang')) app() -> setLocale(Session::get('lang'));
-@endphp
 
 @section('content')
 <div class="container">
